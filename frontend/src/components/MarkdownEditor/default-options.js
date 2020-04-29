@@ -17,7 +17,7 @@ export default {
     'divider',
     'ul',
     'ol',
-    'task',
+    'taskSubmission',
     'indent',
     'outdent',
     'divider',

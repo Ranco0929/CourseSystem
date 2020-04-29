@@ -1,27 +1,4 @@
-
-const tokens = {
-  admin: {
-    token: 'admin-token'
-  },
-  editor: {
-    token: 'editor-token'
-  }
-}
-
-const users = {
-  'admin-token': {
-    roles: ['admin'],
-    introduction: 'I am a super administrator',
-    avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-    name: 'Super Admin'
-  },
-  'editor-token': {
-    roles: ['editor'],
-    introduction: 'I am an editor',
-    avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-    name: 'Normal Editor'
-  }
-}
+import { user } from './db'
 
 export default [
   // user login
@@ -29,20 +6,37 @@ export default [
     url: '/vue-element-admin/user/login',
     type: 'post',
     response: config => {
-      const { username } = config.body
-      const token = tokens[username]
+      const { username, password } = config.body
+      let index = -1
+      for(let i = 0; i < user.length; ++i){
+        if(user[i].email === username){
+          index = i;
+          break;
+        }
+      }
 
-      // mock error
-      if (!token) {
+      if(index >= 0 && user[index].password === password){
+        const ret = {
+            userId: user[index].userId,
+            name: user[index].name,
+            info: user[index].info,
+            avatar: user[index].avatar,
+            email: user[index].email,
+            token: user[index].token,
+            verifiedCode: user[index].verifiedCode,
+            role: user[index].role,
+            createdAt: user[index].createdAt,
+            updatedAt: user[index].updatedAt
+          }
         return {
-          code: 60204,
-          message: 'Account and password are incorrect.'
+          code: 20000,
+          data: ret
         }
       }
 
       return {
-        code: 20000,
-        data: token
+        code: 60204,
+        message: 'Account and password are incorrect.'
       }
     }
   },
@@ -53,19 +47,37 @@ export default [
     type: 'get',
     response: config => {
       const { token } = config.query
-      const info = users[token]
+      let index = -1
+      for(let i = 0; i < user.length; ++i){
+        if(user[i].token === token){
+          index = i;
+          break;
+        }
+      }
 
       // mock error
-      if (!info) {
+      if (index < 0) {
         return {
           code: 50008,
           message: 'Login failed, unable to get user details.'
         }
       }
 
+      const ret = {
+        userId: user[index].userId,
+        name: user[index].name,
+        info: user[index].info,
+        avatar: user[index].avatar,
+        email: user[index].email,
+        token: user[index].token,
+        verifiedCode: user[index].verifiedCode,
+        role: user[index].role,
+        createdAt: user[index].createdAt,
+        updatedAt: user[index].updatedAt
+      }
       return {
         code: 20000,
-        data: info
+        data: ret
       }
     }
   },

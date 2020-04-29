@@ -33,11 +33,11 @@ import { mapGetters } from 'vuex'
 import UserCard from './components/UserCard'
 import Activity from './components/Activity'
 import Timeline from './components/Timeline'
-import Account from './components/Account'
+import taskSubmission from './components/Account'
 
 export default {
   name: 'Profile',
-  components: { UserCard, Activity, Timeline, Account },
+  components: { UserCard, Activity, Timeline, taskSubmission },
   data() {
     return {
       user: {},

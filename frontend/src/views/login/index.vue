@@ -13,7 +13,7 @@
         <el-input
           ref="username"
           v-model="loginForm.username"
-          placeholder="Username"
+          placeholder="User email"
           name="username"
           type="text"
           tabindex="1"
@@ -97,8 +97,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: '000000@qq.com',
+        password: '000000'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
