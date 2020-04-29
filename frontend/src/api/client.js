@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export function create(ns, data) {
+function create(ns, data) {
   return request({
     url: '/vue-element-admin/*/create'.replace('*', ns),
     method: 'post',
@@ -8,7 +8,7 @@ export function create(ns, data) {
   })
 }
 
-export function update(ns, data) {
+function update(ns, data) {
   return request({
     url: '/vue-element-admin/*/update'.replace('*', ns),
     method: 'post',
@@ -16,7 +16,7 @@ export function update(ns, data) {
   })
 }
 
-export function find(ns, data) {
+function find(ns, data) {
   return request({
     url: '/vue-element-admin/*/find'.replace('*', ns),
     method: 'post',
@@ -24,10 +24,17 @@ export function find(ns, data) {
   })
 }
 
-export function remove(ns, data) {
+function remove(ns, data) {
   return request({
     url: '/vue-element-admin/*/remove'.replace('*', ns),
     method: 'delete',
     data
   })
+}
+
+module.exports = {
+  create,
+  update,
+  find,
+  remove
 }
