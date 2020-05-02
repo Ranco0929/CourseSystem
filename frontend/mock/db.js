@@ -60,7 +60,7 @@ const course = [
     courseId: uuid(),
     name: '操作系统',
     info: '无',
-    avatar: 'https://pic.90sjimg.com/design/00/67/59/63/58e89bf380532.png',
+    avatar: 'https://www.myfreax.com/content/images/2019/07/linux-ip-4.png',
     createdAt: '2018-09-21',
     updatedAt: '2019-01-01'
   },
@@ -76,36 +76,36 @@ const course = [
 
 const teachCourse = [
   {
-    userId: user[0].id,
-    courseId: course[0].id,
+    userId: user[0].userId,
+    courseId: course[0].courseId,
     createdAt: '2020-02-03'
   },
   {
-    userId: user[1].id,
-    courseId: course[1].id,
+    userId: user[1].userId,
+    courseId: course[1].courseId,
     createdAt: '2020-02-03'
   }
 ]
 
 const selectCourse = [
   {
-    userId: user[2].id,
-    courseId: course[0].id,
+    userId: user[2].userId,
+    courseId: course[0].courseId,
     createdAt: '2020-02-05'
   },
   {
-    userId: user[3].id,
-    courseId: course[0].id,
+    userId: user[3].userId,
+    courseId: course[0].courseId,
     createdAt: '2020-02-05'
   },
   {
-    userId: user[2].id,
-    courseId: course[1].id,
+    userId: user[2].userId,
+    courseId: course[1].courseId,
     createdAt: '2020-02-05'
   },
   {
-    userId: user[3].id,
-    courseId: course[1].id,
+    userId: user[3].userId,
+    courseId: course[1].courseId,
     createdAt: '2020-02-05'
   }
 ]
@@ -113,7 +113,7 @@ const selectCourse = [
 const task = [
   {
     taskId: uuid(),
-    courseId: course[0].id,
+    courseId: course[0].courseId,
     title: course[0].name + '第一次作业',
     content: {
       '0':{
@@ -145,7 +145,7 @@ const task = [
   },
   {
     taskId: uuid(),
-    courseId: course[1].id,
+    courseId: course[1].courseId,
     title: course[1].name + '第一次作业',
     content: {
       '0':{
@@ -179,8 +179,8 @@ const task = [
 
 const taskSubmission = [
   {
-    taskId: task[0].id,
-    userId: user[2].id,
+    taskId: task[0].taskId,
+    userId: user[2].userId,
     answer: {
       '0':{
         '0':{
@@ -197,8 +197,8 @@ const taskSubmission = [
 
 const taskCorrection = [
   {
-    taskId: task[0].id,
-    userId: user[2].id,
+    taskId: task[0].taskId,
+    userId: user[2].userId,
     content: {
       '0':{
         grade: '3',
@@ -213,7 +213,7 @@ const taskCorrection = [
 
 const taskAnalysis = [
   {
-    taskId: task[0].id,
+    taskId: task[0].taskId,
     trueOrFalse:{
       '0':{
         'true': '1',

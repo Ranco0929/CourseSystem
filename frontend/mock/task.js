@@ -8,8 +8,10 @@ export default [
     type: 'post',
     response: config => {
       const { data } = config.body
-      const limit = data.limit
-      const sort = data.sort
+      let limit = null
+      if(data.limit !== undefined) limit = data.limit
+      let sort = null
+      if(data.sort !== undefined) sort = data.sort
       const keys = []
 
       for(let key in data){

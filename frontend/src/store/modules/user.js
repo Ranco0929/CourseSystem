@@ -4,6 +4,7 @@ import { resetRouter } from '@/router'
 
 const state = {
   token: getToken(),
+  email: '',
   name: '',
   avatar: '',
   info: '',
@@ -16,6 +17,9 @@ const mutations = {
   },
   SET_INFO: (state, info) => {
     state.info = info
+  },
+  SET_EMAIL: (state, email) => {
+    state.email = email
   },
   SET_NAME: (state, name) => {
     state.name = name
@@ -55,7 +59,7 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
-        const { role, name, avatar, info } = data
+        const { role, name, avatar, info, email } = data
 
         // roles must be a non-empty array
         if (!role) {
@@ -63,6 +67,7 @@ const actions = {
         }
 
         commit('SET_ROLES', role)
+        commit('SET_EMAIL', email)
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
         commit('SET_INFO', info)

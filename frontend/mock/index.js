@@ -2,6 +2,7 @@ import Mock from 'mockjs'
 import { param2Obj } from '../src/utils'
 
 import user from './user'
+import course from './course'
 import selectCourse from './select-course'
 import task from './task'
 import taskAnalysis from './task-analysis'
@@ -11,6 +12,7 @@ import teachCourse from './teach-course'
 
 const mocks = [
   ...user,
+  ...course,
   ...selectCourse,
   ...task,
   ...taskAnalysis,

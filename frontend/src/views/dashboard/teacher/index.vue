@@ -1,96 +1,150 @@
 <template>
   <div class="dashboard-teacher-container">
-    <github-corner class="github-corner" />
-
-    <panel-group @handleSetLineChartData="handleSetLineChartData" />
-
-    <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-      <line-chart :chart-data="lineChartData" />
-    </el-row>
-
-    <el-row :gutter="32">
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <raddar-chart />
-        </div>
+    <el-row>
+      <el-col v-for="item in courses" :key="item.courseId" :span="4">
+        <el-card>
+          <el-image :src="item.avatar" class="image" @click="gotoCourseDetail(item)" />
+          <div>
+            <span>{{ item.name }}</span>
+            <br>
+            <span v-for="teacher in item.teachers" :key="teacher">{{ teacher }}</span>
+            <br>
+            <span>{{ item.createdAt }}</span>
+            <el-button type="text" class="button">编辑</el-button>
+          </div>
+        </el-card>
       </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <pie-chart />
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <bar-chart />
-        </div>
+      <el-col :span="4">
+        <img
+          src="https://images.669pic.com/element_min_new_pic/28/4/43/25/25c8336849c4a8dfd0220697d266b4c3.png"
+          class="image"
+          @click="dialogFormVisible = true"
+        >
       </el-col>
     </el-row>
-
-    <el-row :gutter="8">
-      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 12}" :xl="{span: 12}" style="padding-right:8px;margin-bottom:30px;">
-        <transaction-table />
-      </el-col>
-      <el-col :xs="{span: 24}" :sm="{span: 12}" :md="{span: 12}" :lg="{span: 6}" :xl="{span: 6}" style="margin-bottom:30px;">
-        <todo-list />
-      </el-col>
-      <el-col :xs="{span: 24}" :sm="{span: 12}" :md="{span: 12}" :lg="{span: 6}" :xl="{span: 6}" style="margin-bottom:30px;">
-        <box-card />
-      </el-col>
-    </el-row>
+    <!-- 创建课程的弹出框 -->
+    <el-dialog title="创建课程" :visible.sync="dialogFormVisible">
+      <el-form :model="form" :rules="rules">
+        <el-form-item
+          prop="name"
+          label="课程名称"
+        >
+          <el-input v-model="form.name" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="课程简介">
+          <el-input v-model="form.info" autocomplete="off" />
+        </el-form-item>
+        <el-form-item>
+          <pan-thumb v-show="image !== null" :image="image" />
+          <el-button
+            type="primary"
+            icon="el-icon-upload"
+            style="position: absolute;bottom: 15px;margin-left: 40px;"
+            @click="imagecropperShow=true"
+          >
+            上传封面
+          </el-button>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="createCourse">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 上传封面的上传框 -->
+    <image-cropper
+      v-show="imagecropperShow"
+      :key="imagecropperKey"
+      :width="300"
+      :height="300"
+      url="https://httpbin.org/post"
+      lang-type="en"
+      @close="close"
+      @crop-upload-success="cropSuccess"
+    />
   </div>
 </template>
 
 <script>
-import GithubCorner from '@/components/GithubCorner'
-import PanelGroup from './components/PanelGroup'
-import LineChart from './components/LineChart'
-import RaddarChart from './components/RaddarChart'
-import PieChart from './components/PieChart'
-import BarChart from './components/BarChart'
-import TransactionTable from './components/TransactionTable'
-import TodoList from './components/TodoList'
-import BoxCard from './components/BoxCard'
-
-const lineChartData = {
-  newVisitis: {
-    expectedData: [100, 120, 161, 134, 105, 160, 165],
-    actualData: [120, 82, 91, 154, 162, 140, 145]
-  },
-  messages: {
-    expectedData: [200, 192, 120, 144, 160, 130, 140],
-    actualData: [180, 160, 151, 106, 145, 150, 130]
-  },
-  purchases: {
-    expectedData: [80, 100, 121, 104, 105, 90, 100],
-    actualData: [120, 90, 100, 138, 142, 130, 130]
-  },
-  shoppings: {
-    expectedData: [130, 140, 141, 142, 145, 150, 160],
-    actualData: [120, 82, 91, 154, 162, 140, 130]
-  }
-}
+import { find } from '@/api/client'
+import imageCropper from '@/components/ImageCropper'
+import PanThumb from '@/components/PanThumb'
 
 export default {
   name: 'DashboardTeacher',
   components: {
-    GithubCorner,
-    PanelGroup,
-    LineChart,
-    RaddarChart,
-    PieChart,
-    BarChart,
-    TransactionTable,
-    TodoList,
-    BoxCard
+    imageCropper,
+    PanThumb
   },
   data() {
     return {
-      lineChartData: lineChartData.newVisitis
+      courses: [],
+
+      // 创建课程
+      dialogFormVisible: false,
+      form: {
+        name: '',
+        info: '',
+        avatar: '',
+        teacher: []
+      },
+      rules: {
+        name: [
+          { required: true, message: '请输入课程', trigger: 'blur' },
+          { type: 'name', message: '课程名不能为空', trigger: ['blur', 'change'] }
+        ]
+      },
+
+      // 封面上传
+      imagecropperShow: false,
+      imagecropperKey: 0,
+      image: 'https://wpimg.wallstcn.com/577965b9-bb9e-4e02-9f0c-095b41417191'
     }
   },
+  created() {
+    // 初始化
+    this.getCourse()
+  },
   methods: {
-    handleSetLineChartData(type) {
-      this.lineChartData = lineChartData[type]
+    async getCourse() {
+      // 获取用户信息
+      const info = await this.$store.dispatch('user/info')
+      // 获取用户授课信息
+      const teachCourse = await find('teach-course', { data: { userId: info.userId }})
+
+      // 获取用户教授课程的信息
+      const rec = []
+      for (const tc of teachCourse.data) {
+        const course = await find('course', { data: { courseId: tc.courseId }})
+        const tc2 = await find('teach-course', { data: { courseId: tc.courseId }})
+
+        const users = []
+        for (const t of tc2.data) {
+          const user = await find('user', { data: { userId: t.userId }})
+          users.push(user.data[0].name)
+        }
+        (course.data[0])['teachers'] = users
+        rec.push(course.data[0])
+      }
+
+      console.log('rec', rec)
+      // 对data域中的数据从新进行赋值
+      this.courses = rec
+    },
+    gotoCourseDetail(course) {
+      this.$router.push({ path: 'course', query: { courseId: course.courseId }})
+    },
+    cropSuccess(resData) {
+      this.imagecropperShow = false
+      this.imagecropperKey = this.imagecropperKey + 1
+      this.image = resData.files.avatar
+    },
+    close() {
+      this.imagecropperShow = false
+    },
+    createCourse() {
+      // TODO
+      console.log('upload success')
     }
   }
 }
@@ -114,11 +168,30 @@ export default {
     padding: 16px 16px 0;
     margin-bottom: 32px;
   }
-}
-
-@media (max-width:1024px) {
-  .chart-wrapper {
-    padding: 8px;
+  .time {
+    font-size: 13px;
+    color: #999;
+  }
+  .bottom {
+    margin-top: 13px;
+    line-height: 12px;
+  }
+  .button {
+    padding: 0;
+    float: right;
+  }
+  .image {
+    width: 100%;
+    padding: 10px;
+    display: block;
+  }
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+  .clearfix:after {
+    clear: both
   }
 }
 </style>

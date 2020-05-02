@@ -38,3 +38,11 @@ export function update(data) {
     data
   })
 }
+
+export function find(data) {
+  return request({
+    url: '/vue-element-admin/user/find',
+    method: 'post',
+    data
+  })
+}
