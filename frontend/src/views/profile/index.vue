@@ -1,54 +1,45 @@
 <template>
   <div class="app-container">
     <div v-if="user">
-      <el-row :gutter="20">
-
-        <el-col :span="6" :xs="24">
-          <user-card :user="user" />
-        </el-col>
-
+      <el-row :gutter="50">
         <el-col :span="18" :xs="24">
           <el-card>
             <el-tabs v-model="activeTab">
-              <el-tab-pane label="Activity" name="activity">
+              <el-tab-pane label="个人资料" name="Account">
                 <activity />
               </el-tab-pane>
-              <el-tab-pane label="Timeline" name="timeline">
-                <timeline />
-              </el-tab-pane>
-              <el-tab-pane label="Account" name="account">
-                <account :user="user" />
+              <el-tab-pane label="编辑个人资料" name="EidtAccount">
+                <account />
               </el-tab-pane>
             </el-tabs>
           </el-card>
         </el-col>
-
       </el-row>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import UserCard from './components/UserCard'
 import Activity from './components/Activity'
-import Timeline from './components/Timeline'
-import taskSubmission from './components/Account'
+import Account from './components/Account'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Profile',
-  components: { UserCard, Activity, Timeline, taskSubmission },
+  components: { Account, Activity },
   data() {
     return {
       user: {},
-      activeTab: 'activity'
+      activeTab: 'Account'
     }
   },
   computed: {
     ...mapGetters([
-      'name',
       'avatar',
-      'roles'
+      'userID',
+      'name',
+      'role',
+      'info'
     ])
   },
   created() {
@@ -57,10 +48,11 @@ export default {
   methods: {
     getUser() {
       this.user = {
+        avatar: this.avatar,
+        userId: this.userId,
         name: this.name,
-        role: this.roles.join(' | '),
-        email: 'admin@test.com',
-        avatar: this.avatar
+        role: this.role,
+        info: this.info
       }
     }
   }
