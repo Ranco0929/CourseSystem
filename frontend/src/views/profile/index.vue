@@ -1,15 +1,15 @@
 <template>
-  <div class="app-container">
+  <div class="index">
     <div v-if="user">
       <el-row :gutter="50">
         <el-col :span="18" :xs="24">
           <el-card>
             <el-tabs v-model="activeTab">
               <el-tab-pane label="个人资料" name="Account">
-                <activity />
+                <Account />
               </el-tab-pane>
               <el-tab-pane label="编辑个人资料" name="EidtAccount">
-                <account />
+                <EidtAccount />
               </el-tab-pane>
             </el-tabs>
           </el-card>
@@ -20,41 +20,21 @@
 </template>
 
 <script>
-import Activity from './components/Activity'
-import Account from './components/Account'
-import { mapGetters } from 'vuex'
+import Account from '@/views/profile/components/Account'
+import EidtAccount from '@/views/profile/components/EidtAccount'
 
 export default {
-  name: 'Profile',
-  components: { Account, Activity },
+  name: 'Index',
+  components: { EidtAccount, Account },
   data() {
     return {
       user: {},
       activeTab: 'Account'
     }
-  },
-  computed: {
-    ...mapGetters([
-      'avatar',
-      'userID',
-      'name',
-      'role',
-      'info'
-    ])
-  },
-  created() {
-    this.getUser()
-  },
-  methods: {
-    getUser() {
-      this.user = {
-        avatar: this.avatar,
-        userId: this.userId,
-        name: this.name,
-        role: this.role,
-        info: this.info
-      }
-    }
   }
 }
 </script>
+
+<style>
+
+</style>
