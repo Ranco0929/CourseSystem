@@ -7,9 +7,13 @@
           <div>
             <span>{{ item.name }}</span>
             <br>
+            <span>授课教师：</span>
             <span v-for="teacher in item.teachers" :key="teacher">{{ teacher }}</span>
             <br>
-            <span>{{ item.createdAt }}</span>
+            <span>简介：</span>
+            <span>{{ item.info.slice(0, 20) + '...' }}</span>
+            <br>
+            <span>{{ new Date(item.createdAt).toLocaleString() }}</span>
             <el-button type="text" class="button">编辑</el-button>
           </div>
         </el-card>
@@ -22,6 +26,7 @@
         >
       </el-col>
     </el-row>
+    <markdown-editor v-model="content1" height="300px" />
     <!-- 创建课程的弹出框 -->
     <el-dialog title="创建课程" :visible.sync="dialogFormVisible">
       <el-form :model="form" :rules="rules">
@@ -69,12 +74,14 @@
 import { find } from '@/api/client'
 import imageCropper from '@/components/ImageCropper'
 import PanThumb from '@/components/PanThumb'
+import markdownEditor from '@/components/MarkdownEditor'
 
 export default {
   name: 'DashboardTeacher',
   components: {
     imageCropper,
-    PanThumb
+    PanThumb,
+    markdownEditor
   },
   data() {
     return {
@@ -126,13 +133,11 @@ export default {
         (course.data[0])['teachers'] = users
         rec.push(course.data[0])
       }
-
-      console.log('rec', rec)
       // 对data域中的数据从新进行赋值
       this.courses = rec
     },
     gotoCourseDetail(course) {
-      this.$router.push({ path: 'course', query: { courseId: course.courseId }})
+      this.$router.push({ path: 'courseDetail', query: { courseId: course.courseId }})
     },
     cropSuccess(resData) {
       this.imagecropperShow = false
@@ -151,27 +156,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.dashboard-teacher-container {
-  padding: 32px;
-  background-color: rgb(240, 242, 245);
-  position: relative;
-
-  .github-corner {
-    position: absolute;
-    top: 0px;
-    border: 0;
-    right: 0;
-  }
-
-  .chart-wrapper {
-    background: #fff;
-    padding: 16px 16px 0;
-    margin-bottom: 32px;
-  }
-  .time {
-    font-size: 13px;
-    color: #999;
-  }
   .bottom {
     margin-top: 13px;
     line-height: 12px;
@@ -185,13 +169,4 @@ export default {
     padding: 10px;
     display: block;
   }
-  .clearfix:before,
-  .clearfix:after {
-    display: table;
-    content: "";
-  }
-  .clearfix:after {
-    clear: both
-  }
-}
 </style>

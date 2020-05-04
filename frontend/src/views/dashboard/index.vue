@@ -1,6 +1,8 @@
 <template>
-  <div class="dashboard-container">
-    <component :is="currentRole" />
+  <div class="main-area">
+    <el-card>
+      <component :is="currentRole" />
+    </el-card>
   </div>
 </template>
 
@@ -23,10 +25,15 @@ export default {
     ])
   },
   created() {
-    console.log('dashboard created', this.roles)
     if (this.roles.includes('teacher')) {
       this.currentRole = 'teacherDashboard'
     }
   }
 }
 </script>
+
+<style scoped>
+  .main-area{
+    padding: 20px;
+  }
+</style>

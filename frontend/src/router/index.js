@@ -98,6 +98,71 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
+  {
+    path: '/courseDetail',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '',
+        name: 'CourseDetail',
+        component: () => import('@/views/courseDetail/index'),
+        meta: { title: 'CourseDetail', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/taskRelease',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '',
+        name: 'TaskRelease',
+        component: () => import('@/views/taskRelease/index'),
+        meta: { title: 'TaskRelease', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/taskSubmission',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '',
+        name: 'TaskSubmission',
+        component: () => import('@/views/taskSubmission/index'),
+        meta: { title: 'TaskSubmission', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/taskCorrection',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '',
+        name: 'TaskCorrection',
+        component: () => import('@/views/taskCorrection/index'),
+        meta: { title: 'TaskCorrection', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/taskAnalysis',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '',
+        name: 'TaskAnalysis',
+        component: () => import('@/views/taskAnalysis/index'),
+        meta: { title: 'TaskAnalysis', noCache: true }
+      }
+    ]
+  },
   /*
   {
     path: '/permission',
