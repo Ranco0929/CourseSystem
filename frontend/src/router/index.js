@@ -163,6 +163,19 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/taskDetail',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '',
+        name: 'TaskDetail',
+        component: () => import('@/views/taskAnalysis/index'),
+        meta: { title: 'TaskDetail', noCache: true }
+      }
+    ]
+  },
   /*
   {
     path: '/permission',

@@ -10,7 +10,7 @@
         <el-card style="height: 100%;position: fixed;margin-right: 20px;margin-left: 20px;margin-bottom: 20px">
           <center>
             <h4>当前课程</h4>
-            <el-image :src="course.avatar" class="image" />
+            <el-image :src="course.avatar" />
             <div>
               <span>{{ course.name }}</span>
               <el-divider content-position="center">
@@ -20,7 +20,8 @@
               <span>{{ course.info.substring(0, 20) + '...' }}</span>
               <br>
               <br>
-              <span>{{ new Date(course.createdAt).toLocaleString() }}</span>
+              <span>创建时间：</span>
+              <span>{{ new Date(course.createdAt).toLocaleString().substring(0, 10) }}</span>
             </div>
           </center>
         </el-card>
@@ -92,5 +93,6 @@ export default {
 <style scoped>
   .main-area{
     padding: 20px;
+    height: 100%;
   }
 </style>

@@ -2,42 +2,36 @@
   <div>
     <el-tabs v-model="activeName">
       <el-tab-pane label="作业" name="first">
-        <div style="height: 100%">
-          <el-row>
-            <el-col v-for="t in tasks" :key="t.taskId" :span="6">
-              <el-card style="margin: 20px;height: 200px">
-                <div slot="header" class="clearfix">
-                  <span>{{ t.title }}</span>
-                </div>
-                <div>
-                  <span style="font-size: smaller">简介：这次是某次作业简介</span>
-                  <br>
-                  <br>
-                  <span style="font-weight: lighter">截止日期：{{ t.deadline }}</span>
-                </div>
-                <el-button
-                  v-if="t.state === '1'"
-                  style="float: right; padding: 3px 0"
-                  type="danger"
-                  @click="deleteTask(t)"
-                >删除</el-button>
-                <el-button
-                  style="float: right; padding: 3px 0"
-                  type="primary"
-                  @click="gotoTaskDetail(t)"
-                >{{ t.state === '0'? '未发布':'已发布' }}</el-button>
-              </el-card>
-            </el-col>
-            <el-col :span="6">
-              <el-image
-                src="http://pic.51yuansu.com/pic3/cover/03/04/69/5af7f7bb54447_610.jpg"
-                fit="cover"
-                style="padding: 20px;height: 200px;width: 200px"
-                @click="gotoTaskRelease"
-              />
-            </el-col>
-          </el-row>
-        </div>
+        <el-row>
+          <el-col v-for="(t, index) in tasks" :key="t.taskId" :span="6">
+            <el-card style="margin: 20px;height: 200px">
+              <div slot="header" class="clearfix" style="font-weight: bold">{{ t.title }}</div>
+              <div style="font-weight: lighter;font-size: small;margin: 10px">开始日期：{{ t.createdAt }}</div>
+              <div style="font-weight: lighter;font-size: small;margin: 10px">截止日期：{{ t.deadline }}</div>
+              <div style="font-weight: bold;font-size: small;margin: 10px">
+                状态：{{ t.state === '0'? '未发布':'已发布' }}
+              </div>
+              <el-button
+                v-if="t.state === '1'"
+                style="float: right; padding: 3px 0"
+                type="danger"
+                @click="deleteTask(t, index)"
+              >删除</el-button>
+              <el-button
+                style="float: right; padding: 3px 0"
+                type="primary"
+                @click="gotoTaskDetail(t)"
+              >查看</el-button>
+            </el-card>
+          </el-col>
+          <el-col :span="6">
+            <img
+              src="http://pic.51yuansu.com/pic3/cover/03/04/69/5af7f7bb54447_610.jpg"
+              style="padding: 20px;height: 200px;width: 200px"
+              @click="gotoTaskRelease"
+            >
+          </el-col>
+        </el-row>
       </el-tab-pane>
       <el-tab-pane label="学生名单" name="second">
         <el-table
@@ -65,7 +59,7 @@
 </template>
 
 <script>
-import { find } from '@/api/client'
+import { find, remove } from '@/api/client'
 
 export default {
   name: 'Index',
@@ -76,15 +70,15 @@ export default {
       teachers: [],
       activeName: 'first',
       tasks: [
-        { taskId: 1, title: '第一次作业', deadline: '2019-03-08', state: '1' },
-        { taskId: 2, title: '第二次作业', deadline: '2019-03-08', state: '0' },
-        { taskId: 3, title: '第三次作业', deadline: '2019-03-08', state: '0' },
-        { taskId: 4, title: '第四次作业', deadline: '2019-03-08', state: '0' },
-        { taskId: 5, title: '第五次作业', deadline: '2019-03-08', state: '0' },
-        { taskId: 6, title: '第六次作业', deadline: '2019-03-08', state: '0' },
-        { taskId: 7, title: '第六次作业', deadline: '2019-03-08', state: '0' },
-        { taskId: 8, title: '第六次作业', deadline: '2019-03-08', state: '0' },
-        { taskId: 9, title: '第六次作业', deadline: '2019-03-08', state: '0' }
+        { taskId: 1, title: '第一次作业', deadline: '2019-03-08', state: '1', createdAt: '2019-03-01' },
+        { taskId: 2, title: '第二次作业', deadline: '2019-03-08', state: '0', createdAt: '2019-03-01' },
+        { taskId: 3, title: '第三次作业', deadline: '2019-03-08', state: '0', createdAt: '2019-03-01' },
+        { taskId: 4, title: '第四次作业', deadline: '2019-03-08', state: '0', createdAt: '2019-03-01' },
+        { taskId: 5, title: '第五次作业', deadline: '2019-03-08', state: '0', createdAt: '2019-03-01' },
+        { taskId: 6, title: '第六次作业', deadline: '2019-03-08', state: '0', createdAt: '2019-03-01' },
+        { taskId: 7, title: '第六次作业', deadline: '2019-03-08', state: '0', createdAt: '2019-03-01' },
+        { taskId: 8, title: '第六次作业', deadline: '2019-03-08', state: '0', createdAt: '2019-03-01' },
+        { taskId: 9, title: '第六次作业', deadline: '2019-03-08', state: '0', createdAt: '2019-03-01' }
       ],
       tableData: [{
         date: '2016-05-02',
@@ -118,9 +112,20 @@ export default {
         this.tasks = res.data
       }
     },
-    deleteTask(task) {
+    deleteTask(task, index) {
+      remove('task', {
+        data: {
+          taskId: task.taskId
+        }
+      }).then(res => {
+        this.tasks.splice(index, 1)
+        this.$message.success('删除作业成功')
+      }).catch(err => {
+        this.$message.error('删除作业失败' + err)
+      })
     },
     gotoTaskDetail(task) {
+      this.$router.push({ path: 'taskDetail', query: { taskId: task.taskId }})
     },
     gotoTaskRelease() {
       this.$router.push({ path: 'taskRelease', query: { courseId: this.courseId }})
