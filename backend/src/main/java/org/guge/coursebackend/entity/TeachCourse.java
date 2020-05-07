@@ -11,11 +11,13 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
-@Table(name = "teachCourse", catalog = "COURSESERVER")
+@Table(name = "teach_course", catalog = "COURSESERVER")
 public class TeachCourse {
 
     @EmbeddedId
     private TeachCourseKey teachCourseKey;
+
+    private boolean enable;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createdAt = new Date();

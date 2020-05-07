@@ -1,6 +1,6 @@
 package org.guge.coursebackend.service;
 
-import jdk.jshell.spi.ExecutionControl;
+import com.alibaba.fastjson.JSONObject;
 import org.guge.coursebackend.entity.User;
 import org.guge.coursebackend.repository.UserRepository;
 import org.guge.coursebackend.result.Result;
@@ -9,22 +9,27 @@ import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.management.Query;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @PersistenceContext
+    private EntityManager em;
+
     public Result findAll() {
         try {
             var it = userRepository.findAll();
             var users = new ArrayList<User>();
             it.forEach(e -> {
-                if (e.Enable()) {
+                if (e.isEnable()) {
                     users.add(e);
                 }
             });
@@ -41,7 +46,7 @@ public class UserService {
             if (it.isEmpty()) {
                 user.setCreatedAt(new Date());
                 user.setUpdatedAt(new Date());
-
+                user.setEnable(true);
                 userRepository.save(user);
 
                 return ResultFactory.buildSuccessResult("success");
@@ -87,13 +92,33 @@ public class UserService {
         }
     }
 
-    public Result find(Map o) {
-        try {
-            var users = findAll();
+    public Result find(JSONObject o) {
+        String s = "SELECT userId, email, password, name, info, avator, createdAt, updatedAt FROM User where ";
 
-        } catch (Exception e) {
-
+        if (o.isEmpty()) {
+            return findAll();
         }
+
+        if (o.containsKey("key")) {
+            String key = (String) o.get("key");
+            s += key;
+            if (o.containsKey("range")) {
+                JSONObject range = (JSONObject) o.get("range");
+                s +=  " < " + range.get("gt") + " AND " + key + " >= " + range.get("lt");
+            }
+
+            if (o.containsKey("value")) {
+                s += " = " + o.get("value");
+            }
+        }
+        var query = em.createQuery(s);
+        return ResultFactory.buildSuccessResult(query.getResultStream());
+    }
+
+    public Result login(String email, String password) {
+        Query query;
         throw new NotYetImplementedException();
     }
 }
+
+

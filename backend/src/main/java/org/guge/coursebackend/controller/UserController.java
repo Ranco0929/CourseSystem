@@ -1,25 +1,26 @@
 package org.guge.coursebackend.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.guge.coursebackend.entity.User;
 import org.guge.coursebackend.result.Result;
 import org.guge.coursebackend.result.ResultFactory;
 import org.guge.coursebackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.naming.Binding;
 import javax.validation.Valid;
 
 @RestController
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @PostMapping(path = "/user/create", produces = "application/json;charset=utf-8")
+    @PostMapping(path = "/create", produces = "application/json;charset=utf-8")
     public Result create(@Valid @RequestBody User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResultFactory.buildFailResult(bindingResult.getAllErrors());
@@ -27,16 +28,21 @@ public class UserController {
         return userService.create(user);
     }
 
-    @PostMapping(path = "/user/remove", produces = "application/json;charset=utf-8")
+    @DeleteMapping(path = "/remove", produces = "application/json;charset=utf-8")
     public Result remove(@RequestBody long id) {
         return userService.delete(id);
     }
 
-    @PostMapping(path = "/user/update", produces = "application/json;charset=utf-8")
+    @PostMapping(path = "/update", produces = "application/json;charset=utf-8")
     public Result update(@Valid @RequestBody User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResultFactory.buildFailResult(bindingResult.getAllErrors());
         }
         return userService.update(user);
+    }
+
+    @PostMapping(path = "/find", produces = "application/json;charset=utf-8")
+    public Result find(@RequestBody String key) {
+        return userService.find(JSON.parseObject(key));
     }
 }

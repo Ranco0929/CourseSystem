@@ -15,11 +15,13 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "task-submission", catalog = "COURSESERVER")
+@Table(name = "task_submission", catalog = "COURSESERVER")
 public class TaskSubmission {
 
     @EmbeddedId
     private TaskSubmissionKey taskSubmissionKey;
+
+    private boolean enable;
 
     @Convert(converter = JpaConverterListJson.class)
     @Column(name = "answer")

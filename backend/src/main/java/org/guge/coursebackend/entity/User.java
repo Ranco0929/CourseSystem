@@ -22,6 +22,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NotNull(message = "id不能为空")
+    @Column(name = "userId")
     private long userId;
 
     private String name;
@@ -46,13 +47,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(name = "createAt")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createdAt=new Date();
 
+    @Column(name = "updateAt")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updatedAt=new Date();
 
-    public boolean Enable() {
-        return enable;
-    }
 }

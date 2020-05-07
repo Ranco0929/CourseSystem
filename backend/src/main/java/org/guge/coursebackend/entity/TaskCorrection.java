@@ -16,10 +16,12 @@ import java.util.List;
 @Entity
 @Setter
 @Getter
-@Table(name = "task-correction", catalog = "COURSESERVER")
+@Table(name = "task_correction", catalog = "COURSESERVER")
 public class TaskCorrection {
     @EmbeddedId
     private TaskCorrectionKey taskCorrectionKey;
+
+    private boolean enable;
 
     @Convert(converter = JpaConverterListJson.class)
     @Column(name = "content")

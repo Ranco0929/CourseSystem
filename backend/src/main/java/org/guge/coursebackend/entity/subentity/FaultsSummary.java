@@ -1,9 +1,6 @@
 package org.guge.coursebackend.entity.subentity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -12,6 +9,7 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class FaultsSummary implements Serializable {
     private long incorrect=0;
     private long correct=0;
