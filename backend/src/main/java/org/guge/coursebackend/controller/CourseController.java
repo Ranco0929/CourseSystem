@@ -1,5 +1,6 @@
 package org.guge.coursebackend.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import org.guge.coursebackend.entity.Course;
 import org.guge.coursebackend.result.Result;
 import org.guge.coursebackend.result.ResultFactory;
@@ -28,5 +29,24 @@ public class CourseController {
         }
     }
 
-    //TODO Implementation Course Controller
+    @PostMapping(path = "/remove", produces = "application/json;charset=utf-8")
+    public Result remove(@RequestBody JSONObject object) {
+        if(object.containsKey("courseId")) {
+            return courseService.delete((long)object.get("courseId"));
+        } else {
+            return ResultFactory.buildFailResult("Invalid Request Body:" + object.toJSONString());
+        }
+    }
+
+    @PostMapping(path = "/update", produces = "application/json;charset=utf-8")
+    public Result update(@RequestBody Course course, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResultFactory.buildFailResult(bindingResult.getAllErrors().get(0));
+        } else {
+            return courseService.update(course);
+        }
+    }
+
+    //TODO find
+
 }
