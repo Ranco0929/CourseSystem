@@ -35,22 +35,17 @@
       </el-tab-pane>
       <el-tab-pane label="学生名单" name="second">
         <el-table
-          :data="tableData"
+          :data="students"
           style="width: 100%"
         >
-          <el-table-column
-            prop="date"
-            label="日期"
-            width="180"
-          />
           <el-table-column
             prop="name"
             label="姓名"
             width="180"
           />
           <el-table-column
-            prop="address"
-            label="地址"
+            prop="info"
+            label="简介"
           />
         </el-table>
       </el-tab-pane>
@@ -69,47 +64,35 @@ export default {
       info: '',
       teachers: [],
       activeName: 'first',
-      tasks: [
-        { taskId: 1, title: '第一次作业', deadline: '2019-03-08', state: '1', createdAt: '2019-03-01' },
-        { taskId: 2, title: '第二次作业', deadline: '2019-03-08', state: '0', createdAt: '2019-03-01' },
-        { taskId: 3, title: '第三次作业', deadline: '2019-03-08', state: '0', createdAt: '2019-03-01' },
-        { taskId: 4, title: '第四次作业', deadline: '2019-03-08', state: '0', createdAt: '2019-03-01' },
-        { taskId: 5, title: '第五次作业', deadline: '2019-03-08', state: '0', createdAt: '2019-03-01' },
-        { taskId: 6, title: '第六次作业', deadline: '2019-03-08', state: '0', createdAt: '2019-03-01' },
-        { taskId: 7, title: '第六次作业', deadline: '2019-03-08', state: '0', createdAt: '2019-03-01' },
-        { taskId: 8, title: '第六次作业', deadline: '2019-03-08', state: '0', createdAt: '2019-03-01' },
-        { taskId: 9, title: '第六次作业', deadline: '2019-03-08', state: '0', createdAt: '2019-03-01' }
-      ],
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      tasks: [],
+      students: []
     }
   },
   created() {
     if (this.$route.query.courseId !== undefined) {
       this.courseId = this.$route.query.courseId
+      this.getTasks()
+      this.getStudents()
     }
   },
   methods: {
     async getTasks() {
       if (this.courseId !== undefined) {
         // 获取作业
-        const res = await find('task', { data: { courseId: this.courseId, state: 1 }})
-        this.tasks = res.data
+        const tasks = await find('task', { data: { courseId: this.courseId }})
+        this.tasks = tasks.data
+      }
+    },
+    async getStudents() {
+      if (this.courseId !== undefined) {
+        // 获取学生名单
+        const students = []
+        const selectCourses = await find('select-course', { data: { courseId: this.courseId }})
+        for (const sc of selectCourses.data) {
+          const user = await find('user', { data: { userId: sc.userId }})
+          students.push(user.data[0])
+        }
+        this.students = students
       }
     },
     deleteTask(task, index) {

@@ -45,11 +45,11 @@ export default {
       this.taskId = this.$router.query.taskId
       this.userId = this.$router.query.userId
       this.state = this.$router.query.state
-      this.initTask()
+      this.init()
     }
   },
   methods: {
-    async initTask() {
+    async init() {
       const task = await find('task', { data: { taskId: this.taskId }})
       // 获取作业内容
       const questionContent = []

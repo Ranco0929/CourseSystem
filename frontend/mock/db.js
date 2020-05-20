@@ -5,10 +5,9 @@ const user= [
     userId: uuid(),
     name: '张三',
     info: '这是个无趣的人',
-    avatar: 'https://pic.90sjimg.com/design/00/67/59/63/58e89bf380532.png',
     email: '000000@qq.com',
     password: '000000',
-    token: '000000',
+    verified: true,
     verifiedCode: '614870',
     role: 'teacher',
     createdAt: '2018-09-21',
@@ -18,10 +17,9 @@ const user= [
     userId: uuid(),
     name: '李四',
     info: '这是个有趣的人',
-    avatar: 'https://pic.90sjimg.com/design/00/67/59/63/58e89bf380532.png',
     email: '000001@qq.com',
     password: '000000',
-    token: '111111',
+    verified: true,
     verifiedCode: '676667',
     role: 'teacher',
     createdAt: '2012-09-21',
@@ -31,10 +29,9 @@ const user= [
     userId: uuid(),
     name: '小波',
     info: '这是个无趣的人',
-    avatar: 'https://pic.90sjimg.com/design/00/67/59/63/58e89bf380532.png',
     email: '17030120000@qq.com',
     password: '000000',
-    token: '222222',
+    verified: true,
     verifiedCode: '123456',
     role: 'student',
     createdAt: '2018-09-21',
@@ -44,10 +41,9 @@ const user= [
     userId: uuid(),
     name: '小月',
     info: '这是个有趣的人',
-    avatar: 'https://pic.90sjimg.com/design/00/67/59/63/58e89bf380532.png',
     email: '17030120001@qq.com',
     password: '000000',
-    token: '333333',
+    verified: true,
     verifiedCode: '789012',
     role: 'student',
     createdAt: '2012-09-21',
@@ -60,6 +56,7 @@ const course = [
     courseId: uuid(),
     name: '操作系统',
     info: '无',
+    creator: user[0].userId,
     avatar: 'https://www.myfreax.com/content/images/2019/07/linux-ip-4.png',
     createdAt: '2018-09-21',
     updatedAt: '2019-01-01'
@@ -68,6 +65,7 @@ const course = [
     courseId: uuid(),
     name: '数据库',
     info: '无',
+    creator: user[1].userId,
     avatar: 'https://pic.90sjimg.com/design/00/67/59/63/58e89bf380532.png',
     createdAt: '2012-09-21',
     updatedAt: '2014-01-01'
@@ -140,7 +138,8 @@ const task = [
       }
     },
     state: '1',
-    createAt: '2020-02-09',
+    deadline: '2020-02-28',
+    createdAt: '2020-02-09',
     updatedAt: '2020-02-09'
   },
   {
@@ -153,7 +152,7 @@ const task = [
         question: {
           '0':{
             type: 'text',
-            content: '给出下列三个选项，请问哪一个是最合理的？\nA.你说合理就合理\nB。你说合理也不合理\nC.要具体看才能知道到底合不合理\n'
+            content: '给出下列三个选项，请问哪一个是最合理的？A.你说合理就合理B.你说合理也不合理C.要具体看才能知道到底合不合理'
           },
           '1':{
             type: 'image',
@@ -172,12 +171,43 @@ const task = [
       }
     },
     state: '1',
-    createAt: '2020-02-09',
+    deadline: '2020-02-28',
+    createdAt: '2020-02-09',
     updatedAt: '2020-02-09'
   }
 ]
 
 const taskSubmission = [
+  {
+    taskId: task[1].taskId,
+    userId: user[2].userId,
+    answer: {
+      '0':{
+        '0':{
+          type: 'text',
+          content: 'B'
+        }
+      }
+    },
+    state: '1',
+    createdAt: '2020-02-09',
+    updatedAt: '2020-02-10'
+  },
+  {
+    taskId: task[1].taskId,
+    userId: user[3].userId,
+    answer: {
+      '0':{
+        '0':{
+          type: 'text',
+          content: 'B'
+        }
+      }
+    },
+    state: '1',
+    createdAt: '2020-02-09',
+    updatedAt: '2020-02-10'
+  },
   {
     taskId: task[0].taskId,
     userId: user[2].userId,
@@ -192,7 +222,22 @@ const taskSubmission = [
     state: '1',
     createdAt: '2020-02-09',
     updatedAt: '2020-02-10'
-  }
+  },
+  {
+    taskId: task[0].taskId,
+    userId: user[3].userId,
+    answer: {
+      '0':{
+        '0':{
+          type: 'text',
+          content: 'B'
+        }
+      }
+    },
+    state: '1',
+    createdAt: '2020-02-09',
+    updatedAt: '2020-02-10'
+  },
 ]
 
 const taskCorrection = [

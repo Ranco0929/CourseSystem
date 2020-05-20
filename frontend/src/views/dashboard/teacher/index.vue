@@ -57,7 +57,7 @@
         <el-form-item>
           <!-- TODO 这里的action需要改为项目的东西 -->
           <el-upload
-            action="https://jsonplaceholder.typicode.com/posts/"
+            action="/dev-api/vue-element-admin/course/create"
             list-type="picture-card"
             :on-preview="handlePictureCardPreview"
             :on-remove="handleRemove"
@@ -199,17 +199,9 @@ export default {
         data: this.form
       }).then(res => {
         this.form = createCourseTemplate
-        this.getCourse().then(res1 => {
-          const courseId = (this.courses[this.courses.length - 1]).courseId
-          for (const id of userId) {
-            create('teach-course', {
-              data: {
-                userId: id,
-                courseId: courseId
-              }
-            })
-          }
-        })
+      }).catch(err => {
+        console.log('create course err')
+        this.$message.error('创建课程错误：' + err)
       })
     }
   }

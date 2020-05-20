@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const chalk = require('chalk')
 const path = require('path')
 const Mock = require('mockjs')
+const { checkToken } = require('./token-manager')
 
 const mockDir = path.join(process.cwd(), 'mock')
 
@@ -38,6 +39,20 @@ const responseFake = (url, type, respond) => {
     type: type || 'get',
     response(req, res) {
       console.log('request invoke:' + req.path)
+
+      const token = req.headers['x-token']
+      if(req.path.indexOf('user/login') < 0){
+        const code = checkToken(token)
+        if(code !== 20000){
+          const ret = {
+            code,
+            msg: code === 40002 ? 'illegal token' : 'token expires'
+          }
+          res.json(Mock.mock(ret))
+          return
+        }
+      }
+      if(token) req.headers['x-token'] = JSON.parse(token)
       res.json(Mock.mock(respond instanceof Function ? respond(req, res) : respond))
     }
   }

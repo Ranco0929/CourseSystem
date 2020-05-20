@@ -107,7 +107,7 @@ export const asyncRoutes = [
         path: '',
         name: 'CourseDetail',
         component: () => import('@/views/courseDetail/index'),
-        meta: { title: 'CourseDetail', noCache: true }
+        meta: { title: 'CourseDetail' }
       }
     ]
   },
@@ -120,7 +120,7 @@ export const asyncRoutes = [
         path: '',
         name: 'TaskRelease',
         component: () => import('@/views/taskRelease/index'),
-        meta: { title: 'TaskRelease', noCache: true }
+        meta: { title: 'TaskRelease' }
       }
     ]
   },
@@ -133,7 +133,7 @@ export const asyncRoutes = [
         path: '',
         name: 'TaskSubmission',
         component: () => import('@/views/taskSubmission/index'),
-        meta: { title: 'TaskSubmission', noCache: true }
+        meta: { title: 'TaskSubmission' }
       }
     ]
   },
@@ -146,7 +146,7 @@ export const asyncRoutes = [
         path: '',
         name: 'TaskCorrection',
         component: () => import('@/views/taskCorrection/index'),
-        meta: { title: 'TaskCorrection', noCache: true }
+        meta: { title: 'TaskCorrection' }
       }
     ]
   },
@@ -159,7 +159,7 @@ export const asyncRoutes = [
         path: '',
         name: 'TaskAnalysis',
         component: () => import('@/views/taskAnalysis/index'),
-        meta: { title: 'TaskAnalysis', noCache: true }
+        meta: { title: 'TaskAnalysis' }
       }
     ]
   },
@@ -171,7 +171,7 @@ export const asyncRoutes = [
       {
         path: '',
         name: 'TaskDetail',
-        component: () => import('@/views/taskAnalysis/index'),
+        component: () => import('@/views/taskDetail/index'),
         meta: { title: 'TaskDetail', noCache: true }
       }
     ]

@@ -5,16 +5,24 @@
         <h3>{{ task.title }}</h3>
       </center>
       <el-form v-model="correction">
-        <el-form-item v-for="(question, index) in task.content" :key="index">
-          <div v-html="markdown2HTML(question.question)" />
-          <div v-html="markdown2HTML(submission[index])" />
-          <div v-html="markdown2HTML(question.solution)" />
+        <el-form-item v-for="(question, index) in task.content" :key="index+''">
+          <el-form>
+            <el-form-item :label="index+1+''">
+              <div v-html="markdown2HTML(question.question)" />
+            </el-form-item>
+            <el-form-item :label="'回答'">
+              <div v-html="markdown2HTML(submission[index])" />
+            </el-form-item>
+            <el-form-item :label="'答案'">
+              <div v-html="markdown2HTML(task.solution[index])" />
+            </el-form-item>
+          </el-form>
           <el-form v-model="correction[index]">
             <el-form-item :label="'给分'" :rules="[{ required: true, message: '打分不能为空', trigger: 'blur' }]">
-              <el-input v-model="correction.grade" placeholder="'请打分'" />
+              <el-input v-model="correction.grade" placeholder="请打分" />
             </el-form-item>
             <el-form-item :label="'批语'">
-              <el-input v-model="correction.extra" placeholder="'请写批语'" />
+              <el-input v-model="correction.extra" placeholder="请写批语" />
             </el-form-item>
           </el-form>
         </el-form-item>
@@ -28,7 +36,7 @@
 
 <script>
 import marked from 'marked'
-import { create } from '@/api/client'
+import { find, create } from '@/api/client'
 
 export default {
   name: 'Index',
@@ -42,15 +50,16 @@ export default {
     }
   },
   created() {
-    if (this.$router.query.taskId !== undefined && this.$router.query.userId !== undefined) {
-      this.taskId = this.$router.query.taskId
-      this.userId = this.$router.query.userId
-      this.initTask()
-      this.initSubmission()
+    if (this.$router.currentRoute.query.taskId !== undefined && this.$router.currentRoute.query.userId !== undefined) {
+      this.taskId = this.$router.currentRoute.query.taskId
+      this.userId = this.$router.currentRoute.query.userId
+      this.init().catch(err => {
+        this.$message.error('加载失败：' + err)
+      })
     }
   },
   methods: {
-    async initTask() {
+    async init() {
       const task = await find('task', { data: { taskId: this.taskId }})
       // 获取作业内容
       const questionContent = []
@@ -72,16 +81,14 @@ export default {
         const solution = this.json2Str((task.data[0].solution)[id])
         solutionContent.push(solution)
       }
-      // TODO 作业的状态还没有完全规定好
-      this.task = { title: task.data[0].title, content: questionContent, solution: solutionContent }
-    },
-    async initSubmission() {
+      // 获取题目
       const submission = await find('task-submission', { data: { taskId: this.taskId, userId: this.userId }})
       const submissionContent = []
-      for (const id of submission.answer) {
-        const ans = this.json2Str(submission.answer[id])
+      for (const id in submission.data[0].answer) {
+        const ans = this.json2Str(submission.data[0].answer[id])
         submissionContent.push(ans)
       }
+      this.task = { title: task.data[0].title, content: questionContent, solution: solutionContent }
       this.submission = submissionContent
     },
     submitForm() {

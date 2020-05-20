@@ -1,188 +1,255 @@
 const task = require('./db').task
+const taskSubmission = require('./db').taskSubmission
+const taskCorrection = require('./db').taskCorrection
 const uuid = require('uuid').v4
 
 export default [
-  // find
+  // get tasks
   {
-    url: '/vue-element-admin/task/find',
-    type: 'post',
+    url: '/vue-element-admin/task/get_tasks',
+    type: 'get',
     response: config => {
-      const { data } = config.body
-      let limit = null
-      if(data.limit !== undefined) limit = data.limit
-      let sort = null
-      if(data.sort !== undefined) sort = data.sort
-      const keys = []
+      const { courseId} = config.query
 
-      for(let key in data){
-        if(key !== 'sort' && key !== 'limit'){
-          keys.push(key)
-        }
-      }
-
-      const compare = function (origin, target){
-        if (typeof target !== "object") {
-          //target不是对象/数组
-          return origin === target; //直接返回全等的比较结果
-        }
-
-        if (typeof origin !== "object") {
-          //origin不是对象/数组
-          return false; //直接返回false
-        }
-        for (let key of Object.keys(target)) {
-          //遍历target的所有自身属性的key
-          if (!compare(origin[key], target[key])) {
-            //递归比较key对应的value，
-            //value不等，则两对象不等，结束循环，退出函数，返回false
-            return false;
-          }
-        }
-        //遍历结束，所有value都深度比较相等，则两对象相等
-        return true;
-      }
-
-      const isRange = function (o){
-        return o['gt'] || o['gte'] || o['lt'] || o['lte']
-      }
-
-      let res = task
-      for(let key of keys){
-        let temp = []
-        if(typeof data[key] === 'object' && isRange(data[key])){
-          let bounds = []
-          for(let bound in data[key]){
-            bounds.push(bound)
-          }
-          for(let rec in res){
-            let valid = true
-            if(data[key]['gt'] && rec[key] <= data[key]['gt'])  valid = false
-            if(data[key]['gte'] && rec[key] < data[key]['gte']) valid = false
-            if(data[key]['lt'] && rec[key] >= data[key]['lt'])  valid = false
-            if(data[key]['lte'] && rec[key] > data[key]['lte'])  valid = false
-            if(valid) temp.push(rec)
-          }
-        }
-        else{
-          for(let rec of res){
-            if(compare(rec[key], data[key]))  temp.push(rec)
-          }
-        }
-        res = temp
-      }
-
-      if(sort) {
-        let sortKey = []
-        for (let key in sort) {
-          sortKey.push(key)
-        }
-
-        res.sort((a, b) => {
-          if (data['sort'][sortKey[0]] === 0) {
-            return a[sortKey[0]] - b[sortKey[0]]
-          } else {
-            return b[sortKey[0]] - a[sortKey[0]]
-          }
-        })
-      }
-
-      if(limit){
-        res = res.slice(0, limit)
-      }
-      return {
-        code: 20000,
-        data: res
-      }
-    }
-  },
-
-  // create
-  {
-    url: '/vue-element-admin/task/create',
-    type: 'post',
-    response: config => {
-      const { data } = config.body
-      data['taskId'] = uuid()
-      task.push(data)
-      return {
-        code: 20000,
-        data: 'success'
-      }
-    }
-  },
-
-  // update
-  {
-    url: '/vue-element-admin/task/update',
-    type: 'post',
-    response: config => {
-      const { data } = config.body
-
-      if(!data.taskId){
+      if(!courseId){
         return {
-          code: 678901,
-          data: 'error: task id cannot be null or empty'
+          code: 40000,
+          msg: 'course id cannot be null'
+        }
+      }
+
+      const tasks = []
+      for(let t of task){
+        if(t.courseId === courseId){
+          tasks.push(t)
+        }
+      }
+
+      return {
+        code: 20000,
+        data: tasks
+      }
+    }
+  },
+
+  // get one of the task
+  {
+    url: '/vue-element-admin/task/get_task',
+    type: 'get',
+    response: config => {
+      const { taskId, courseId } = config.query
+      if(!taskId || !courseId){
+        return {
+          code: 40000,
+          msg: 'task id or course id cannot be null'
+        }
+      }
+
+      let ret = {}
+      for(let t of task){
+        if(t.courseId === courseId && t.taskId === taskId){
+          ret = t
+          break
+        }
+      }
+
+      return {
+        code: 20000,
+        data: ret
+      }
+    }
+  },
+
+  // create task
+  {
+    url: '/vue-element-admin/task/create_task',
+    type: 'post',
+    response: config => {
+      const { courseId, title, state, deadline } = config.body
+
+      if(!courseId || !title || !deadline || !(state === '0' || state === '1')){
+        return {
+          code: 40000,
+          msg: 'course id, title, deadline cannot be null or state is not \'0\' or \'1\''
+        }
+      }
+
+      const newT = Object.assign({}, config.body, {taskId: uuid(), createdAt: new Date().toUTCString(), updatedAt: new Date().toUTCString()})
+      task.push(newT)
+      return {
+        code: 20000,
+        data: newT
+      }
+    }
+  },
+
+  // update task
+  {
+    url: '/vue-element-admin/task/update_task',
+    type: 'post',
+    response: config => {
+      const { taskId, courseId } = config.body
+
+      if(!taskId || !courseId){
+        return {
+          code: 40000,
+          msg: 'task id or course id cannot be null'
         }
       }
 
       let index = -1
       for(let i = 0; i < task.length; ++i){
-        if(task[i].taskId === data.taskId){
+        if(task[i].taskId === taskId && task[i].courseId === courseId){
           index = i
-          break;
+          break
         }
       }
-
-      if(index >= 0){
-        data['taskId'] = data.taskId;
-        task[index] = data
+      if(index === -1){
         return {
-          code: 20000,
-          data: 'success'
+          code: 40004,
+          msg: 'no task corresponding to the task id and course id'
         }
       }
 
+      task.splice(index, 1)
+      const newT = Object.assign({}, config.body)
+      task.push(newT)
       return {
-        code: 456778,
-        data: 'error: there is no task corresponding to id ' + data.taskId
+        code: 20000,
+        data: newT
       }
     }
   },
 
-  // remove
+  // delete task
   {
-    url: '/vue-element-admin/task/remove',
-    type: 'delete',
+    url: '/vue-element-admin/task/update_task',
+    type: 'post',
     response: config => {
-      const { data } = config.body
-      if(!data.taskId){
+      const { taskId, courseId } = config.body
+
+      if(!taskId || !courseId){
         return {
-          code: 678901,
-          data: 'error: task id cannot be null or empty'
+          code: 40000,
+          msg: 'task id or course id cannot be null'
         }
       }
 
       let index = -1
       for(let i = 0; i < task.length; ++i){
-        if(task[i].taskId === data.taskId){
+        if(task[i].taskId === taskId && task[i].courseId === courseId){
           index = i
-          break;
+          break
+        }
+      }
+
+      if(index === -1){
+        return {
+          code: 40004,
+          msg: 'no task corresponding to the task id and course id'
+        }
+      }
+      task.splice(index, 1)
+      return {
+        code: 20000,
+        data: {}
+      }
+    }
+  },
+
+  // submit task
+  {
+    url: '/vue-element-admin/task/submit_task',
+    type: 'post',
+    response: config => {
+      const { taskId, userId, state } = config.body
+
+      if(!taskId || !userId || !state){
+        return {
+          code: 40000,
+          msg: 'task id or user id or state cannot be null'
+        }
+      }
+
+      let index = -1
+      for(let i = 0; i < taskSubmission.length; ++i){
+        if(taskSubmission[i].taskId === taskId && taskSubmission[i].userId === userId){
+          index = i
+          break
         }
       }
 
       if(index >= 0){
-        task[index] = task[0]
-        task.pop()
+        taskSubmission.splice(index, 1)
+        taskSubmission.push(config.body)
         return {
           code: 20000,
-          data: 'success'
+          data: {}
         }
       }
 
+      taskSubmission.push(config.body)
       return {
-        code: 456778,
-        data: 'error: there is no task corresponding to id ' + data.taskId
+        code: 20000,
+        data: {}
       }
+    }
+  },
+
+  // correct task
+  {
+    url: '/vue-element-admin/task/correct_task',
+    type: 'post',
+    response: config => {
+      const { taskId, userId, state } = config.body
+
+      if(!taskId || !userId || !state){
+        return {
+          code: 40000,
+          msg: 'task id or user id or state cannot be null'
+        }
+      }
+
+      let index = -1
+      for(let i = 0; i < taskCorrection.length; ++i){
+        if(taskCorrection[i].taskId === taskId && taskCorrection[i].userId === userId){
+          index = i
+          break
+        }
+      }
+
+      if(index >= 0){
+        taskCorrection.splice(index, 1)
+        taskCorrection.push(config.body)
+        return {
+          code: 20000,
+          data: {}
+        }
+      }
+
+      taskCorrection.push(config.body)
+      return {
+        code: 20000,
+        data: {}
+      }
+    }
+  },
+
+  // get task analysis
+  {
+    url: '/vue-element-admin/task/get_task_analysis',
+    type: 'get',
+    response: config => {
+      const { taskId, courseId } = config.query
+
+      if(!taskId || !courseId){
+        return {
+          code: 40000,
+          msg: 'task id or course id cannot be null'
+        }
+      }
+
+      // TODO
     }
   }
 ]

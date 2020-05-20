@@ -6,7 +6,6 @@ const state = {
   token: getToken(),
   email: '',
   name: '',
-  avatar: '',
   info: '',
   roles: ''
 }
@@ -24,9 +23,6 @@ const mutations = {
   SET_NAME: (state, name) => {
     state.name = name
   },
-  SET_AVATAR: (state, avatar) => {
-    state.avatar = avatar
-  },
   SET_ROLES: (state, roles) => {
     state.roles = roles
   }
@@ -38,7 +34,6 @@ const actions = {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
-        console.log('succeed login', response.data)
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)
@@ -52,14 +47,14 @@ const actions = {
   // get user info
   info({ commit }) {
     return new Promise((resolve, reject) => {
-      info(getToken()).then(response => {
+      info().then(response => {
         const { data } = response
 
         if (!data) {
           reject('Verification failed, please Login again.')
         }
 
-        const { role, name, avatar, info, email } = data
+        const { role, name, info, email } = data
 
         // roles must be a non-empty array
         if (!role) {
@@ -69,7 +64,6 @@ const actions = {
         commit('SET_ROLES', role)
         commit('SET_EMAIL', email)
         commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
         commit('SET_INFO', info)
         resolve(data)
       }).catch(error => {
