@@ -3,8 +3,8 @@ package org.guge.coursebackend.service;
 import com.alibaba.fastjson.JSONObject;
 import org.guge.coursebackend.entity.User;
 import org.guge.coursebackend.repository.UserRepository;
-import org.guge.coursebackend.result.Result;
-import org.guge.coursebackend.result.ResultFactory;
+import org.guge.coursebackend.utils.result.Result;
+import org.guge.coursebackend.utils.result.ResultFactory;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class UserService {
@@ -93,7 +92,7 @@ public class UserService {
     }
 
     public Result find(JSONObject o) {
-        String s = "SELECT userId, email, password, name, info, avator, createdAt, updatedAt FROM User where ";
+        String s = "SELECT userId, email, password, verifiedCode, name, info, avator, createdAt, updatedAt FROM User where ";
 
         if (o.isEmpty()) {
             return findAll();
@@ -118,6 +117,16 @@ public class UserService {
     public Result login(String email, String password) {
         Query query;
         throw new NotYetImplementedException();
+    }
+
+    public User findByEmail(String email) {
+        var it = userRepository.findByEmail(email);
+
+        if (it.isEmpty()) {
+            return null;
+        } else {
+            return it.get();
+        }
     }
 }
 

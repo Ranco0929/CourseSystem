@@ -2,8 +2,8 @@ package org.guge.coursebackend.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import org.guge.coursebackend.entity.Task;
-import org.guge.coursebackend.result.Result;
-import org.guge.coursebackend.result.ResultFactory;
+import org.guge.coursebackend.utils.result.Result;
+import org.guge.coursebackend.utils.result.ResultFactory;
 import org.guge.coursebackend.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;

@@ -2,8 +2,8 @@ package org.guge.coursebackend.controller;
 
 import org.guge.coursebackend.entity.SelectCourse;
 import org.guge.coursebackend.entity.subentity.SelectCourseKey;
-import org.guge.coursebackend.result.Result;
-import org.guge.coursebackend.result.ResultFactory;
+import org.guge.coursebackend.utils.result.Result;
+import org.guge.coursebackend.utils.result.ResultFactory;
 import org.guge.coursebackend.service.SelectCourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.awt.geom.RectangularShape;
 
 @RestController
 @RequestMapping("/selectCourse")

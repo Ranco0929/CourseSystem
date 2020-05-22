@@ -1,4 +1,4 @@
-package org.guge.coursebackend.result;
+package org.guge.coursebackend.utils.result;
 
 import java.util.Objects;
 

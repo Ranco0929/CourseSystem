@@ -1,16 +1,14 @@
 package org.guge.coursebackend.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import org.guge.coursebackend.entity.User;
-import org.guge.coursebackend.result.Result;
-import org.guge.coursebackend.result.ResultFactory;
+import org.guge.coursebackend.utils.result.Result;
+import org.guge.coursebackend.utils.result.ResultFactory;
 import org.guge.coursebackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.naming.Binding;
 import javax.validation.Valid;
 
 @RestController

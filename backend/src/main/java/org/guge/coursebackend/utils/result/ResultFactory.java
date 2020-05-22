@@ -1,4 +1,4 @@
-package org.guge.coursebackend.result;
+package org.guge.coursebackend.utils.result;
 
 public class ResultFactory {
 

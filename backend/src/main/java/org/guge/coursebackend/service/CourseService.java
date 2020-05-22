@@ -2,8 +2,8 @@ package org.guge.coursebackend.service;
 
 import org.guge.coursebackend.entity.Course;
 import org.guge.coursebackend.repository.CourseRepository;
-import org.guge.coursebackend.result.Result;
-import org.guge.coursebackend.result.ResultFactory;
+import org.guge.coursebackend.utils.result.Result;
+import org.guge.coursebackend.utils.result.ResultFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
