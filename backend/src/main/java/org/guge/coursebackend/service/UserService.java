@@ -3,7 +3,9 @@ package org.guge.coursebackend.service;
 import com.alibaba.fastjson.JSONObject;
 import org.guge.coursebackend.entity.User;
 import org.guge.coursebackend.repository.UserRepository;
+import org.guge.coursebackend.utils.TokenUtils;
 import org.guge.coursebackend.utils.result.Result;
+import org.guge.coursebackend.utils.result.ResultCode;
 import org.guge.coursebackend.utils.result.ResultFactory;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,8 +117,16 @@ public class UserService {
     }
 
     public Result login(String email, String password) {
-        Query query;
-        throw new NotYetImplementedException();
+        var it = userRepository.findByEmailAndPassword(email, password);
+
+        if (it.isEmpty()) {
+            return ResultFactory.buildResult(ResultCode.AUTHORIZATION, "Can't find User: " + email, "");
+        } else {
+            String token = TokenUtils.createToken(email);
+            var user = it.get();
+            user.setToken(token);
+            return ResultFactory.buildSuccessResult(user);
+        }
     }
 
     public User findByEmail(String email) {
