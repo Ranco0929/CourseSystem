@@ -44,9 +44,8 @@
           </span>
         </el-form-item>
       </el-tooltip>
-
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
-
+      <router-link to="register">没有密码？注册</router-link>
       <div style="position:relative">
         <div class="tips">
           <span>Username : admin</span>
