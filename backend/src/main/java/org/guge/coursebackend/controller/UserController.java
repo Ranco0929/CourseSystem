@@ -26,6 +26,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Deprecated
     @PostMapping(path = "/create", produces = "application/json;charset=utf-8")
     public Result create(@Valid @RequestBody User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -52,17 +53,20 @@ public class UserController {
         return userService.create(user);
     }
 
+    @LoginRequire
     @PostMapping(path = "/verify", produces = "application/json;charset=utf-8")
     public Result verify(@RequestBody String keyValue) {
         JSONObject detail = JSON.parseObject(keyValue);
         return userService.verify(detail.getLong("userId"), detail.getString("verifiedCode"));
     }
 
+    @Deprecated
     @DeleteMapping(path = "/remove", produces = "application/json;charset=utf-8")
     public Result remove(@RequestBody long id) {
         return userService.delete(id);
     }
 
+    @Deprecated
     @PostMapping(path = "/update", produces = "application/json;charset=utf-8")
     public Result update(@Valid @RequestBody User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -78,6 +82,7 @@ public class UserController {
         return userService.search(claims.getId());
     }
 
+    @LoginRequire
     @PostMapping(path = "/edit_info", produces = "application/json;charset=utf-8")
     public Result editInfo(@RequestHeader("Authorization") String token, @RequestBody String keyValue) {
         var claims = TokenUtils.parseToken(token);
@@ -86,6 +91,7 @@ public class UserController {
         return userService.editInfo(claims.getId(), detail);
     }
 
+    @LoginRequire
     @GetMapping(path = "/get_teachers", produces = "application/json;charset=utf-8")
     public Result getTeachers(@RequestHeader("Authorization") String token) {
         var claims = TokenUtils.parseToken(token);
