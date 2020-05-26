@@ -1,7 +1,11 @@
 package org.guge.coursebackend.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import io.jsonwebtoken.Claims;
 import org.guge.coursebackend.entity.User;
+import org.guge.coursebackend.entity.subentity.Role;
+import org.guge.coursebackend.utils.TokenUtils;
 import org.guge.coursebackend.utils.annotation.CurrentUser;
 import org.guge.coursebackend.utils.annotation.LoginRequire;
 import org.guge.coursebackend.utils.exceptions.CourseException;
@@ -12,7 +16,6 @@ import org.guge.coursebackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 
@@ -31,6 +34,30 @@ public class UserController {
         return userService.create(user);
     }
 
+    @PostMapping(path = "/register", produces = "application/json;charset=utf-8")
+    public Result register(@RequestBody String keyValue) {
+        JSONObject detail = JSON.parseObject(keyValue);
+        User user = new User();
+        user.setName(detail.getString("name"));
+        user.setEmail(detail.getString("email"));
+        user.setRole(switch (detail.getString("role")) {
+            case "teacher" -> Role.TEACHER;
+            case "student" -> Role.STUDENT;
+            default -> Role.STUDENT;
+        });
+
+        user.setPassword(detail.getString("password"));
+        user.setInfo(detail.getString("info"));
+
+        return userService.create(user);
+    }
+
+    @PostMapping(path = "/verify", produces = "application/json;charset=utf-8")
+    public Result verify(@RequestBody String keyValue) {
+        JSONObject detail = JSON.parseObject(keyValue);
+        return userService.verify(detail.getLong("userId"), detail.getString("verifiedCode"));
+    }
+
     @DeleteMapping(path = "/remove", produces = "application/json;charset=utf-8")
     public Result remove(@RequestBody long id) {
         return userService.delete(id);
@@ -45,9 +72,24 @@ public class UserController {
     }
 
     @LoginRequire
-    @PostMapping(path = "/find", produces = "application/json;charset=utf-8")
-    public Result find(@RequestBody String key) {
-        return userService.find(JSON.parseObject(key));
+    @GetMapping(path = "/get_info")
+    public Result find(@RequestHeader("Authorization") String token) {
+        Claims claims = TokenUtils.parseToken(token);
+        return userService.search(claims.getId());
+    }
+
+    @PostMapping(path = "/edit_info", produces = "application/json;charset=utf-8")
+    public Result editInfo(@RequestHeader("Authorization") String token, @RequestBody String keyValue) {
+        var claims = TokenUtils.parseToken(token);
+        var detail = JSON.parseObject(keyValue);
+
+        return userService.editInfo(claims.getId(), detail);
+    }
+
+    @GetMapping(path = "/get_teachers", produces = "application/json;charset=utf-8")
+    public Result getTeachers(@RequestHeader("Authorization") String token) {
+        var claims = TokenUtils.parseToken(token);
+        return userService.getTeachers(claims.getId());
     }
 
     @PostMapping(path = "/login")

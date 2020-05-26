@@ -13,6 +13,8 @@ class CourseBackendApplicationTests {
     @Autowired
     JavaMailSenderImpl mailSender;
 
+
+
     @Test
     void contextLoads() {
     }

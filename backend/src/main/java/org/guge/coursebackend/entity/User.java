@@ -29,6 +29,8 @@ public class User {
 
     private boolean enable;
 
+    private boolean verified;
+
     private String info;
 
     private String avator;

@@ -1,9 +1,13 @@
 package org.guge.coursebackend.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.guge.coursebackend.entity.User;
+import org.guge.coursebackend.repository.SelectCourseRepository;
+import org.guge.coursebackend.repository.TeachCourseRepository;
 import org.guge.coursebackend.repository.UserRepository;
 import org.guge.coursebackend.utils.TokenUtils;
+import org.guge.coursebackend.utils.exceptions.ServerErrorException;
 import org.guge.coursebackend.utils.result.Result;
 import org.guge.coursebackend.utils.result.ResultCode;
 import org.guge.coursebackend.utils.result.ResultFactory;
@@ -14,16 +18,18 @@ import org.springframework.stereotype.Service;
 import javax.management.Query;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 
 @Service
 public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @PersistenceContext
-    private EntityManager em;
+    @Autowired
+    private SelectCourseRepository selectCourseRepository;
+
+    @Autowired
+    private TeachCourseRepository teachCourseRepository;
 
     public Result findAll() {
         try {
@@ -50,7 +56,7 @@ public class UserService {
                 user.setEnable(true);
                 userRepository.save(user);
 
-                return ResultFactory.buildSuccessResult("success");
+                return ResultFactory.buildSuccessResult(userRepository.findByEmail(user.getEmail()));
             } else {
                 return ResultFactory.buildFailResult("Specific Id has created: " + user.getUserId());
             }
@@ -93,29 +99,6 @@ public class UserService {
         }
     }
 
-    public Result find(JSONObject o) {
-        String s = "SELECT userId, email, password, verifiedCode, name, info, avator, createdAt, updatedAt FROM User where ";
-
-        if (o.isEmpty()) {
-            return findAll();
-        }
-
-        if (o.containsKey("key")) {
-            String key = (String) o.get("key");
-            s += key;
-            if (o.containsKey("range")) {
-                JSONObject range = (JSONObject) o.get("range");
-                s +=  " < " + range.get("gt") + " AND " + key + " >= " + range.get("lt");
-            }
-
-            if (o.containsKey("value")) {
-                s += " = " + o.get("value");
-            }
-        }
-        var query = em.createQuery(s);
-        return ResultFactory.buildSuccessResult(query.getResultStream());
-    }
-
     public Result login(String email, String password) {
         var it = userRepository.findByEmailAndPassword(email, password);
 
@@ -129,15 +112,106 @@ public class UserService {
         }
     }
 
-    public User findByEmail(String email) {
+    public Result search(String email) {
         var it = userRepository.findByEmail(email);
 
         if (it.isEmpty()) {
-            return null;
+            return ResultFactory.buildResult(ResultCode.SERVERERROR, "server error", "");
         } else {
-            return it.get();
+            return ResultFactory.buildSuccessResult(it.get());
         }
     }
+
+    public void setVerifyCode(long userId, String code) throws ServerErrorException {
+        var it = userRepository.findById(userId);
+        if (!it.isEmpty()) {
+            it.get().setVerifiedCode(code);
+        }
+
+        throw new ServerErrorException();
+    }
+
+    public Result verify(long userId, String code) {
+        try {
+            var it = userRepository.findById(userId);
+            if (it.isEmpty()) {
+                return ResultFactory.buildResult(ResultCode.NOTFOUND, "User Not Found", "");
+            } else {
+                var user = it.get();
+                if (user.getVerifiedCode().equals(code)) {
+                    return ResultFactory.buildSuccessResult("");
+                } else {
+                    return ResultFactory.buildResult(ResultCode.VERIFYCODEERROR, "wrong verify code", "");
+                }
+            }
+        } catch (Exception e) {
+            return ResultFactory.buildResult(ResultCode.SERVERERROR, "server error", e.getMessage());
+        }
+    }
+
+    public Result editInfo(String email, JSONObject detail) {
+        try {
+            var it = userRepository.findById(detail.getLong("userId"));
+            if (it.isEmpty()) {
+                return ResultFactory.NotFoundResult(null);
+            } else {
+                var user = it.get();
+                if (user.getEmail().equals(email)) {
+                    user.setName(detail.getString("name"));
+                    user.setInfo(detail.getString("info"));
+                    user.setUpdatedAt(new Date());
+                    userRepository.save(user);
+                    return ResultFactory.buildSuccessResult(user);
+                } else {
+                    return ResultFactory.buildAuthorzationFailedResult("Can't edit user: " + email);
+                }
+            }
+        } catch (Exception e) {
+            return ResultFactory.ServerErrorResult(e.getMessage());
+        }
+    }
+
+    public Result getTeachers(String email) {
+        try {
+            var it = userRepository.findByEmail(email);
+            if (it.isEmpty()) {
+                return ResultFactory.NotFoundResult("Can't found user: " + email);
+            } else {
+                var id = it.get().getUserId();
+
+                var courseList = selectCourseRepository.findAllByUserId(id);
+
+                Map<Long, JSONObject> result = new HashMap<>();
+                for (var course : courseList) {
+                    var teacherlist = teachCourseRepository.findAllByCourseId(course.getSelectCourseKey().getCourseId());
+                    for (var teacher :
+                            teacherlist) {
+                        var teacherId = teacher.getTeachCourseKey().getUserId();
+                        if (!result.containsKey(teacherId)) {
+                            JSONObject keyValue = new JSONObject();
+                            var new_teacher = userRepository.findById(teacherId).get();
+
+                            keyValue.put("userId", new_teacher.getUserId());
+                            keyValue.put("name", new_teacher.getName());
+                            keyValue.put("email", new_teacher.getEmail());
+
+                            result.put(teacherId, keyValue);
+                        }
+                    }
+                }
+                JSONArray array = new JSONArray();
+                result.forEach((k, v) -> {
+                    array.add(v);
+                });
+
+                return ResultFactory.buildSuccessResult(array);
+            }
+
+        } catch (Exception e) {
+            return ResultFactory.ServerErrorResult(e.getMessage());
+        }
+    }
+
 }
 
 

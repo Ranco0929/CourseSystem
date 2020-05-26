@@ -2,14 +2,12 @@ package org.guge.coursebackend.login;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import org.apache.catalina.filters.ExpiresFilter;
 import org.guge.coursebackend.entity.User;
 import org.guge.coursebackend.service.UserService;
 import org.guge.coursebackend.utils.TokenUtils;
 import org.guge.coursebackend.utils.annotation.LoginRequire;
 import org.guge.coursebackend.utils.exceptions.CourseException;
 import org.guge.coursebackend.utils.result.ResultCode;
-import org.guge.coursebackend.utils.result.ResultFactory;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -53,7 +51,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 }
 
                 String email = claims.getId();
-                User user = userService.findByEmail(email);
+                User user = (User) userService.search(email).getData();
 
                 if (user == null) {
                     throw new CourseException(ResultCode.AUTHORIZATION, "用户不存在");
