@@ -46,7 +46,6 @@
             >
               <template slot-scope="scope">
                 <el-button type="text" size="small" @click="gotoCorrect(scope.row)">批改</el-button>
-                <el-button type="text" size="small" @click="gotoRedo(scope.row)">打回</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -60,7 +59,7 @@
 </template>
 
 <script>
-import { find } from '@/api/client'
+import { get } from '@/api/client'
 import marked from 'marked'
 
 export default {
@@ -87,63 +86,41 @@ export default {
   },
   methods: {
     async init() {
-      const task = await find('task', { data: { taskId: this.taskId }})
+      const task = await get('task/get_task', { taskId: this.taskId })
       // 获取作业内容
       const questionContent = []
-      for (const id in task.data[0].content) {
-        const question = this.json2Str((task.data[0].content)[id].question)
+      for (const id in task.data.content) {
+        const question = this.json2Str((task.data.content)[id].question)
         questionContent.push({
-          type: (task.data[0].content)[id].type,
+          type: (task.data.content)[id].type,
           question: question,
-          grade: (task.data[0].content)[id].grade
+          grade: (task.data.content)[id].grade
         })
       }
       // 获取答案内容
       const solutionContent = []
-      for (const id in task.data[0].solution) {
-        const solution = this.json2Str((task.data[0].solution)[id])
+      for (const id in task.data.solution) {
+        const solution = this.json2Str((task.data.solution)[id])
         solutionContent.push(solution)
       }
       this.task = {
-        createAt: task.data[0].createdAt,
-        deadline: task.data[0].deadline,
+        createAt: task.data.createdAt,
+        deadline: task.data.deadline,
         solution: solutionContent,
-        title: task.data[0].title,
+        title: task.data.title,
         content: questionContent,
-        updatedAt: task.data[0].updatedAt
+        updatedAt: task.data.updatedAt
       }
     },
     async initSubmissions() {
-      const submissions = await find('task-submission', { data: { taskId: this.taskId }})
-      const submissionsContent = []
-      for (const s of submissions.data) {
-        const user = await find('user', { data: { userId: s.userId }})
-        console.log('user', user)
-        const userName = user.data[0].name
-        let state = ''
-        const hasCorrect = await find('task-correction', { data: { userId: s.userId, taskId: this.taskId }})
-        if (hasCorrect.data.length === 0) {
-          state = '未批改'
-        } else {
-          state = hasCorrect.data[0].state === '1' ? '已批改' : '已打回'
-        }
-        submissionsContent.push({
-          userId: s.userId,
-          taskId: this.taskId,
-          name: userName,
-          createdAt: s.createdAt,
-          updatedAt: s.updatedAt,
-          state: state
-        })
+      const sbs = await get('task/get_submissions', { taskId: this.taskId })
+      for (const sb of sbs.data) {
+        sb.state = sb.state === '0' ? '未批改' : (sb.state === '1' ? '已批改' : '打回')
       }
-      this.submissions = submissionsContent
+      this.submissions = sbs.data
     },
     gotoCorrect(rowInfo) {
-      const userId = rowInfo.userId
-      this.$router.push({ path: 'taskCorrection', query: { taskId: this.taskId, userId: userId }})
-    },
-    gotoRedo(rowInfo) {
-      // TODO
+      this.$router.push({ path: 'taskCorrection', query: { taskId: this.taskId, userId: rowInfo.userId }})
     },
     json2Str(json) {
       let str = ''

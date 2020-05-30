@@ -39,8 +39,8 @@ const responseFake = (url, type, respond) => {
     type: type || 'get',
     response(req, res) {
       console.log('request invoke:' + req.path)
-
       const token = req.headers['x-token']
+      // console.log('mock-server log', token)
       if(req.path.indexOf('user/login') < 0){
         const code = checkToken(token)
         if(code !== 20000){

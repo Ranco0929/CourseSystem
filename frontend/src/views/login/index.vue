@@ -96,8 +96,8 @@ export default {
     }
     return {
       loginForm: {
-        username: '000000@qq.com',
-        password: '000000'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],

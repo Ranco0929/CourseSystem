@@ -1,11 +1,11 @@
 <template>
   <div class="main-area">
     <el-card v-if="courseId !== ''" style="height: 100%">
-      <el-form :rules="rules">
-        <el-form-item :label="'作业标题'" prop="title">
+      <el-form :model="task">
+        <el-form-item :label="'作业标题'" prop="title" :rules="[{ required: true, message: '请输入作业标题', trigger: 'blur' }]">
           <el-input v-model="task.title" placeholder="请输入作业标题" style="width: 220px" />
         </el-form-item>
-        <el-form-item :label="'截止时间'" prop="deadline">
+        <el-form-item :label="'截止时间'" prop="deadline" :rules="[{ required: true, message: '请输入截止时间', trigger: 'blur' }]">
           <el-date-picker
             v-model="task.deadline"
             type="date"
@@ -59,15 +59,13 @@
 <script>
 import markdownEditor from '@/components/MarkdownEditor'
 import marked from 'marked'
-import { create } from '@/api/client'
+import { post } from '@/api/client'
 
 const questionTemplate = {
   type: '',
   question: '',
   grade: ''
 }
-
-const solutionTemplate = ''
 
 export default {
   name: 'Index',
@@ -81,7 +79,8 @@ export default {
         title: '',
         content: [],
         solution: [],
-        state: '0'
+        state: '0',
+        deadline: ''
       },
       questionType: [
         {
@@ -110,14 +109,10 @@ export default {
         }
       ],
       selectType: '',
-      editingQuestion: questionTemplate,
-      editingSolution: solutionTemplate,
+      editingQuestion: Object.assign({}, questionTemplate),
+      editingSolution: '',
       editingIndex: -1,
-      popEditor: false,
-      rules: {
-        title: [{ required: true, message: '请输入作业标题', trigger: 'blur' }],
-        deadline: [{ required: true, message: '请输入截止时间', trigger: 'blur' }]
-      }
+      popEditor: false
     }
   },
   created() {
@@ -136,24 +131,25 @@ export default {
       const form = {
         courseId: this.courseId,
         title: this.task.title,
-        'content': content,
-        'solution': solution,
-        state: '1'
+        content: content,
+        solution: solution,
+        state: '1',
+        deadline: this.task.deadline
       }
 
-      create('task', { data: form }).then(res => {
+      post('task/create_task', form).then(_ => {
         // 成功
         this.$message({
           message: '提交成功',
           type: 'success',
           duration: 2000
         })
+
         this.$router.push({ path: 'courseDetail', query: { courseId: this.courseId }})
-        // eslint-disable-next-line handle-callback-err
       }).catch(err => {
         // 失败
         this.$message({
-          message: '提交失败',
+          message: '提交失败:' + err,
           type: 'error',
           duration: 2000
         })

@@ -113,7 +113,7 @@ export const asyncRoutes = [
         path: '',
         name: 'CourseDetail',
         component: () => import('@/views/courseDetail/index'),
-        meta: { title: 'CourseDetail' }
+        meta: { title: 'CourseDetail', noCache: true }
       }
     ]
   },
@@ -153,19 +153,6 @@ export const asyncRoutes = [
         name: 'TaskCorrection',
         component: () => import('@/views/taskCorrection/index'),
         meta: { title: 'TaskCorrection' }
-      }
-    ]
-  },
-  {
-    path: '/taskAnalysis',
-    component: Layout,
-    hidden: true,
-    children: [
-      {
-        path: '',
-        name: 'TaskAnalysis',
-        component: () => import('@/views/taskAnalysis/index'),
-        meta: { title: 'TaskAnalysis' }
       }
     ]
   },

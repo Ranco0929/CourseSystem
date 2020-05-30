@@ -1,9 +1,10 @@
-import { login, logout, info } from '@/api/user'
+import { get, post } from '@/api/client'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const state = {
   token: getToken(),
+  userId: '',
   email: '',
   name: '',
   info: '',
@@ -13,6 +14,9 @@ const state = {
 const mutations = {
   SET_TOKEN: (state, token) => {
     state.token = token
+  },
+  SET_USER_ID: (state, userId) => {
+    state.userId = userId
   },
   SET_INFO: (state, info) => {
     state.info = info
@@ -33,10 +37,11 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
+      post('user/login', { username: username.trim(), password: password }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)
+        console.log('succeed login')
         resolve()
       }).catch(error => {
         reject(error)
@@ -47,20 +52,20 @@ const actions = {
   // get user info
   info({ commit }) {
     return new Promise((resolve, reject) => {
-      info().then(response => {
+      get('user/get_info', {}).then(response => {
         const { data } = response
 
         if (!data) {
           reject('Verification failed, please Login again.')
         }
 
-        const { role, name, info, email } = data
+        const { role, name, info, email, userId } = data
 
         // roles must be a non-empty array
         if (!role) {
           reject('getInfo: roles must be a non-null!')
         }
-
+        commit('SET_USER_ID', userId)
         commit('SET_ROLES', role)
         commit('SET_EMAIL', email)
         commit('SET_NAME', name)
@@ -73,9 +78,9 @@ const actions = {
   },
 
   // user logout
-  logout({ commit, state, dispatch }) {
+  logout({ commit, dispatch }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
+      post('user/logout', {}).then(() => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', '')
         removeToken()
