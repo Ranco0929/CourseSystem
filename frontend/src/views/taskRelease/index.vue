@@ -39,12 +39,13 @@
           <markdown-editor v-model="editingQuestion.question" />
         </el-form-item>
         <el-form-item :label="'题目答案'">
-          <el-input v-if="editingQuestion.type === '单选题'" v-model="editingSolution" placeholder="请输入正确选项" />
-          <el-input v-if="editingQuestion.type === '多选题'" v-model="editingSolution" placeholder="请输入正确选项" />
-          <el-input v-if="editingQuestion.type === '填空题'" v-model="editingSolution" placeholder="请输入正确答案" />
-          <el-input v-if="editingQuestion.type === '判断题'" v-model="editingSolution" placeholder="请输入对或错" />
-          <markdown-editor v-if="editingQuestion.type === '简答题'" v-model="editingSolution" placeholder="请输入答案" />
-          <markdown-editor v-if="editingQuestion.type === '应用题'" v-model="editingSolution" placeholder="请输入答案" />
+          <div v-if="editingQuestion.solution === ''" />
+          <el-input v-if="editingQuestion.type === '单选题'" v-model="editingQuestion.solution" placeholder="请输入正确选项" />
+          <el-input v-if="editingQuestion.type === '多选题'" v-model="editingQuestion.solution" placeholder="请输入正确选项" />
+          <el-input v-if="editingQuestion.type === '填空题'" v-model="editingQuestion.solution" placeholder="请输入正确答案" />
+          <el-input v-if="editingQuestion.type === '判断题'" v-model="editingQuestion.solution" placeholder="请输入对或错" />
+          <markdown-editor v-if="editingQuestion.type === '简答题'" v-model="editingQuestion.solution" placeholder="请输入答案" />
+          <markdown-editor v-if="editingQuestion.type === '应用题'" v-model="editingQuestion.solution" placeholder="请输入答案" />
         </el-form-item>
         <el-form-item :label="'题目分值'">
           <el-input v-model="editingQuestion.grade" placeholder="请输入分值" style="width: 100px" />
@@ -64,7 +65,8 @@ import { post } from '@/api/client'
 const questionTemplate = {
   type: '',
   question: '',
-  grade: ''
+  grade: '',
+  solution: ''
 }
 
 export default {
@@ -110,7 +112,6 @@ export default {
       ],
       selectType: '',
       editingQuestion: Object.assign({}, questionTemplate),
-      editingSolution: '',
       editingIndex: -1,
       popEditor: false
     }
@@ -156,8 +157,15 @@ export default {
       })
     },
     confirmAddQuestion() {
-      if (this.editingIndex < 0) this.task.content.push(this.editingQuestion)
-      else this.task.content[this.editingIndex] = this.editingQuestion
+      const solution = this.editingQuestion.solution
+      delete this.editingQuestion.solution
+      if (this.editingIndex < 0) {
+        this.task.content.push(this.editingQuestion)
+        this.task.solution.push(solution)
+      } else {
+        this.task.content[this.editingIndex] = this.editingQuestion
+        this.task.solution[this.editingIndex] = solution
+      }
       // 重置
       this.popEditor = false
       this.editingQuestion = questionTemplate
@@ -166,6 +174,10 @@ export default {
     editQuestion(index, question) {
       this.editingIndex = index
       this.editingQuestion = question
+
+      const temp = Object.assign({}, this.editingQuestion)
+      temp['solution'] = this.task.solution[index]
+      this.editingQuestion = Object.assign({}, temp)
       this.popEditor = true
     },
     removeQuestion(index) {

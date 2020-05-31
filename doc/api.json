@@ -603,7 +603,6 @@
         "url": "task/get_task",
         "method": "GET",
         "params": {
-          "courseId": "xxxxx",
           "taskId": "xxxxxxx"
         },
         "body": {}
@@ -798,7 +797,6 @@
         "params": {},
         "body": {
           "taskId": "xxxxx",
-          "courseId": "xxxxxx",
           "title": "xxxxx",
           "content": {
             "0": {
@@ -875,7 +873,6 @@
         "method": "POST",
         "params": {},
         "body": {
-          "courseId": "xxxxx",
           "taskId": "xxxxxx"
         }
       },
@@ -951,8 +948,7 @@
         "url": "task/get_task_analysis",
         "method": "GET",
         "params": {
-          "taskId": "xxxxxx",
-          "courseId": "xxxxxx"
+          "taskId": "xxxxxx"
         },
         "body": {}
       },
@@ -960,21 +956,48 @@
         "code": 20000,
         "data": {
           "taskId": "xxxxx",
-          "courseId": "xxxxx",
-          "statistic": {
-            "0": {
-              "true": 10,
-              "false": 20
-            },
-            "1": {
-              "true": 23,
-              "false": 7
-            }
+          "totalSubmission": 50,
+          "accuracy": {
+            "1": 20,
+            "2": 30
           },
-          "duplicate": {
-            // TODO
+          "similarity": {
+            "1": {
+              "amount": 3,
+              "detail": {
+                "1": {
+                  "userId": "xxxxx",
+                  "value": "0.95"
+                },
+                "2": {
+                  "userId": "xxxxx",
+                  "value": "0.92"
+                },
+                "3": {
+                  "userId": "xxxxx",
+                  "value": "0.93"
+                }
+              }
+            },
+            "2": {
+              "amount": 2,
+              "detail": {
+                "1": {
+                  "userId": "xxxxx",
+                  "value": "0.95"
+                },
+                "2": {
+                  "userId": "xxxxx",
+                  "value": "0.91"
+                }
+              }
+            }
           }
         }
+      },
+      "error": {
+        "code": "40000/50000", // task id错误或者服务器错误
+        "msg": "task id cannot be null/server error"
       }
     }
   }
