@@ -2,19 +2,14 @@
   <div class="user-information">
     <el-row>
       <el-col :span="40">
-        <el-avatar :size="150" :src="avatar" @click="dialogVisible = true" />
+        <div @click="dialogVisible = true">
+          <el-avatar :size="150" :src="avatar" />
+        </div>
         <div>
-          <br>
-          <span> 邮箱：{{ email }}</span>
-          <br>
-          <br>
-          <span> 姓名：{{ name }}</span>
-          <br>
-          <br>
-          <span> 身份：{{ role }}</span>
-          <br>
-          <br>
-          <span> 简介：{{ info }}</span>
+          <el-card><span> 邮箱：{{ email }}</span></el-card>
+          <el-card><span> 姓名：{{ name }}</span></el-card>
+          <el-card><span> 身份：{{ role }}</span></el-card>
+          <el-card><span> 简介：{{ info }}</span></el-card>
         </div>
       </el-col>
     </el-row>
@@ -47,7 +42,8 @@ export default {
   data() {
     return {
       dialogVisible: false,
-      imageUrl: ''
+      imageUrl: '',
+      avatar: 'http://image.biaobaiju.com/uploads/20181025/19/1540467434-IhiJNbyXak.jpg'
     }
   },
   computed: {

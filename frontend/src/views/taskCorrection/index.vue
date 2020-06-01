@@ -36,7 +36,7 @@
 
 <script>
 import marked from 'marked'
-import { find, create } from '@/api/client'
+import { get, post } from '@/api/client'
 
 export default {
   name: 'Index',
@@ -60,15 +60,15 @@ export default {
   },
   methods: {
     async init() {
-      const task = await find('task', { data: { taskId: this.taskId }})
+      const task = await get('task/get_task', { taskId: this.taskId })
       // 获取作业内容
       const questionContent = []
-      for (const id in task.data[0].content) {
-        const question = this.json2Str((task.data[0].content)[id].question)
+      for (const id in task.data.content) {
+        const question = this.json2Str((task.data.content)[id].question)
         questionContent.push({
-          type: (task.data[0].content)[id].type,
+          type: (task.data.content)[id].type,
           question: question,
-          grade: (task.data[0].content)[id].grade
+          grade: (task.data.content)[id].grade
         })
         this.correction.push({
           grade: '',
@@ -77,18 +77,18 @@ export default {
       }
       // 获取答案内容
       const solutionContent = []
-      for (const id in task.data[0].solution) {
-        const solution = this.json2Str((task.data[0].solution)[id])
+      for (const id in task.data.solution) {
+        const solution = this.json2Str((task.data.solution)[id])
         solutionContent.push(solution)
       }
       // 获取题目
-      const submission = await find('task-submission', { data: { taskId: this.taskId, userId: this.userId }})
+      const submission = await get('task/get_submission', { taskId: this.taskId, userId: this.userId })
       const submissionContent = []
-      for (const id in submission.data[0].answer) {
-        const ans = this.json2Str(submission.data[0].answer[id])
+      for (const id in submission.data.answer) {
+        const ans = this.json2Str(submission.data.answer[id])
         submissionContent.push(ans)
       }
-      this.task = { title: task.data[0].title, content: questionContent, solution: solutionContent }
+      this.task = { title: task.data.title, content: questionContent, solution: solutionContent }
       this.submission = submissionContent
     },
     submitForm() {
@@ -99,11 +99,10 @@ export default {
       const form = {
         taskId: this.taskId,
         userId: this.userId,
+        state: '1',
         content: content
       }
-      create('task-correction', {
-        data: form
-      }).then(res => {
+      post('task/correct_task', form).then(res => {
         // 成功
         this.$message({
           message: '提交成功',

@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { find, remove } from '@/api/client'
+import { get, post } from '@/api/client'
 
 export default {
   name: 'Index',
@@ -76,35 +76,37 @@ export default {
     }
   },
   methods: {
-    async getTasks() {
+    getTasks() {
       if (this.courseId !== undefined) {
         // 获取作业
-        const tasks = await find('task', { data: { courseId: this.courseId }})
-        this.tasks = tasks.data
+        get('task/get_tasks', {
+          courseId: this.courseId,
+          userId: this.$store.getters.userId
+        }).then(res => {
+          this.tasks = res.data
+        }).catch(err => {
+          this.$message.error(err)
+        })
       }
     },
-    async getStudents() {
+    getStudents() {
       if (this.courseId !== undefined) {
         // 获取学生名单
-        const students = []
-        const selectCourses = await find('select-course', { data: { courseId: this.courseId }})
-        for (const sc of selectCourses.data) {
-          const user = await find('user', { data: { userId: sc.userId }})
-          students.push(user.data[0])
-        }
-        this.students = students
+        get('course/get_students', {
+          courseId: this.courseId
+        }).then(res => {
+          this.students = res.data
+        })
       }
     },
     deleteTask(task, index) {
-      remove('task', {
-        data: {
-          taskId: task.taskId
-        }
-      }).then(res => {
-        this.tasks.splice(index, 1)
-        this.$message.success('删除作业成功')
+      post('task/delete_task', {
+        courseId: this.courseId,
+        taskId: task.taskId
+      }).then(_ => {
+        this.getTasks()
       }).catch(err => {
-        this.$message.error('删除作业失败' + err)
+        this.$message.error(err)
       })
     },
     gotoTaskDetail(task) {

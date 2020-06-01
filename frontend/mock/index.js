@@ -3,22 +3,12 @@ import { param2Obj } from '../src/utils'
 
 import user from './user'
 import course from './course'
-import selectCourse from './select-course'
 import task from './task'
-import taskAnalysis from './task-analysis'
-import taskCorrection from './task-correction'
-import taskSubmission from './task-submission'
-import teachCourse from './teach-course'
 
 const mocks = [
   ...user,
   ...course,
-  ...selectCourse,
-  ...task,
-  ...taskAnalysis,
-  ...taskCorrection,
-  ...taskSubmission,
-  ...teachCourse
+  ...task
 ]
 
 // for front mock

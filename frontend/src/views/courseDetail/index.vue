@@ -14,7 +14,7 @@
             <div>
               <span>{{ course.name }}</span>
               <el-divider content-position="center">
-                <span v-for="teacher in course.teachers" :key="teacher">{{ teacher }}</span>
+                <span v-for="teacher in course.teachers" :key="teacher.userId">{{ teacher.name }}</span>
               </el-divider>
               <span>简介：</span>
               <span>{{ course.info.substring(0, 20) + '...' }}</span>
@@ -32,7 +32,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { find } from '@/api/client'
+import { get } from '@/api/client'
 import teacherCourseDetail from './teacher'
 import studentCourseDetail from './student'
 
@@ -65,26 +65,12 @@ export default {
     }
     if (this.$route.query.courseId !== undefined) {
       this.courseId = this.$route.query.courseId
-      this.getCourseInfo()
-    }
-  },
-  methods: {
-    async getCourseInfo() {
-      if (this.courseId !== undefined) {
-        // 获取课程简介
-        const course = await find('course', { data: { courseId: this.courseId }})
-        // 获取授课老师
-        const teachCourse = await find('teach-course', { data: { courseId: this.courseId }})
-        const teachers = []
-        for (const tc of teachCourse.data) {
-          const user = await find('user', { data: { userId: tc.userId }})
-          // console.log('user', user)
-          teachers.push(user.data[0].name)
-        }
-        (course.data[0])['teachers'] = teachers
-        // console.log('course', course)
-        this.course = course.data[0]
-      }
+      get('course/get_course', {
+        courseId: this.courseId,
+        userId: this.$store.getters.userId
+      }).then(res => {
+        this.course = res.data
+      })
     }
   }
 }

@@ -84,17 +84,7 @@
       },
       "response": {
         "code": 20000,
-        "data": {
-          "userId": "xxxx",
-          "name": "xxxxx",
-          "info": "xxxxx",
-          "email": "xxxxxx",
-          "token": "xxxxxx",
-          "verified": "true/false",
-          "role": "xxxxxxxx",
-          "createdAt": "xxxxxxx",
-          "updatedAt": "xxxxxxx"
-        }
+        "data": {}
       },
       "error": {
         "code": "40006/40000/50000",//邮箱重复注册/请求错误即关键项为空/服务器错误
@@ -234,15 +224,7 @@
                 "updatedAt": "xxxxxxx"
               }
             ],
-            "creator": {
-              "userId":  "xxxx",
-              "name": "xxxxx",
-              "info": "xxxxx",
-              "email": "xxxxxx",
-              "role": "xxxxxxxx",
-              "createdAt": "xxxxxxx",
-              "updatedAt": "xxxxxxx"
-            },
+            "creator": "xxxxx",
             "info": "xxxxx",
             "createdAt": "xxxx-xx-xx"
           }
@@ -251,81 +233,6 @@
       "error": {
         "code": "40004/50000",// 请求的userId不存在/服务器错误
         "msg": "user id not found / server error"
-      }
-    },
-    "createCourse": {
-      "request": {
-        "url": "course/create_course",
-        "method": "POST",
-        "params": {},
-        "body": {
-          "name": "xxxx",
-          "info": "xxxx",
-          "avatar": "xxxxxxxxxxx", // 暴露出的服务器本地链接
-          "creator": "xxxxx", // user id
-          "teachers": ["xxxx","xxxx"] // user id
-        }
-      },
-      "response": {
-        "code": 20000,
-        "data": {
-          "courseId": "xxxxx",
-          "name": "xxxxx",
-          "avatar": "xxxxxxx",
-          "teachers": ["xxxx","xxxx"],
-          "creator": "xxxxx",
-          "info": "xxxxx",
-          "createdAt": "xxxx-xx-xx"
-        }
-      },
-      "error": {
-        "code": "40000/50000",// 请求错误即name为空/服务器错误
-        "msg": "name cannot be null / server error"
-      }
-    },
-    "addCourse": {
-      "request": {
-        "url": "course/add_course",
-        "method": "POST",
-        "params": {},
-        "body": {
-          "courseId": "xxxxxx",
-          "userId": "xxxxxxx"
-        }
-      },
-      "response": {
-        "code": 20000,
-        "data": {
-          "courseId": "xxxxxx",
-          "userId": "xxxxxx",
-          "cratedAt": "xxxx-xx-xx"
-        }
-      },
-      "error": {
-        "code": "40000/50000",//请求错误即courseId或userId错误 / 服务器错误
-        "msg": "wrong course id or user id / server error"
-      }
-    },
-    // 针对老师，学生的后端处理不一样，对老师来说除了要删除course表中的记录，还要删除teach-course表中的记录
-    // 而对于学生只需要删除select-course表中的记录
-    "deleteCourse": {
-      "request": {
-        "url": "course/delete_course",
-        "method": "POST",
-        "params": {},
-        "body": {
-          "courseId": "xxxxxx",
-          "userId": "xxxxxx",
-          "role": "student/teacher"
-        }
-      },
-      "response": {
-        "code": 20000,
-        "data": {}
-      },
-      "error": {
-        "code": "40000/50000",//请求错误即courseId或userId错误 / 服务器错误
-        "msg": "wrong course id or user id / server error"
       }
     },
     "getCourse": {
@@ -374,6 +281,187 @@
         "msg": "wrong course id / server error"
       }
     },
+    "getAllCourses": {
+      "request": {
+        "url": "course/get_all_courses",
+        "method": "GET",
+        "params": {
+          "userId": "xxxxxx"
+        }
+      },
+      "response": {
+        "code": 20000,
+        "data": [
+          {
+            "courseId": "xxxxx",
+            "name": "xxxxx",
+            "avatar": "xxxxxxx",
+            "teachers": [
+              {
+                "userId":  "xxxx",
+                "name": "xxxxx",
+                "info": "xxxxx",
+                "email": "xxxxxx",
+                "role": "xxxxxxxx",
+                "createdAt": "xxxxxxx",
+                "updatedAt": "xxxxxxx"
+              },
+              {
+                "userId":  "xxxx",
+                "name": "xxxxx",
+                "info": "xxxxx",
+                "email": "xxxxxx",
+                "role": "xxxxxxxx",
+                "createdAt": "xxxxxxx",
+                "updatedAt": "xxxxxxx"
+              }
+            ],
+            "creator": 'xxxxx',// user id
+            "info": "xxxxx",
+            "createdAt": "xxxx-xx-xx"
+          },
+          {
+            "courseId": "xxxxx",
+            "name": "xxxxx",
+            "avatar": "xxxxxxx",
+            "teachers": [
+              {
+                "userId":  "xxxx",
+                "name": "xxxxx",
+                "info": "xxxxx",
+                "email": "xxxxxx",
+                "role": "xxxxxxxx",
+                "createdAt": "xxxxxxx",
+                "updatedAt": "xxxxxxx"
+              }
+            ],
+            "creator": "xxxxx",
+            "info": "xxxxx",
+            "createdAt": "xxxx-xx-xx"
+          }
+        ]
+      },
+      "error": {
+        "code": "50000",// 服务器错误
+        "msg": "server error"
+      }
+    },
+    "createCourse": {
+      "request": {
+        "url": "course/create_course",
+        "method": "POST",
+        "params": {},
+        "body": {
+          "name": "xxxx",
+          "info": "xxxx",
+          "avatar": "xxxxxxxxxxx", // 暴露出的服务器本地链接
+          "creator": "xxxxx", // user id
+          "teachers": ["xxxx","xxxx"] // user id
+        }
+      },
+      "response": {
+        "code": 20000,
+        "data": {
+          "courseId": "xxxxx",
+          "name": "xxxxx",
+          "avatar": "xxxxxxx",
+          "teachers": [
+            {
+              "userId":  "xxxx",
+              "name": "xxxxx",
+              "info": "xxxxx",
+              "email": "xxxxxx",
+              "role": "xxxxxxxx",
+              "createdAt": "xxxxxxx",
+              "updatedAt": "xxxxxxx"
+            },
+            {
+              "userId":  "xxxx",
+              "name": "xxxxx",
+              "info": "xxxxx",
+              "email": "xxxxxx",
+              "role": "xxxxxxxx",
+              "createdAt": "xxxxxxx",
+              "updatedAt": "xxxxxxx"
+            }
+          ],
+          "creator": 'xxxxx',// user id
+          "info": "xxxxx",
+          "createdAt": "xxxx-xx-xx"
+        }
+      },
+      "error": {
+        "code": "40000/50000",// 请求错误即name为空/服务器错误
+        "msg": "name cannot be null / server error"
+      }
+    },
+    "addCourse": {
+      "request": {
+        "url": "course/add_course",
+        "method": "POST",
+        "params": {},
+        "body": {
+          "courseId": "xxxxxx",
+          "userId": "xxxxxxx"
+        }
+      },
+      "response": {
+        "code": 20000,
+        "data": {
+          "courseId": "xxxxx",
+          "name": "xxxxx",
+          "avatar": "xxxxxxx",
+          "teachers": [
+            {
+              "userId":  "xxxx",
+              "name": "xxxxx",
+              "info": "xxxxx",
+              "email": "xxxxxx",
+              "role": "xxxxxxxx",
+              "createdAt": "xxxxxxx",
+              "updatedAt": "xxxxxxx"
+            },
+            {
+              "userId":  "xxxx",
+              "name": "xxxxx",
+              "info": "xxxxx",
+              "email": "xxxxxx",
+              "role": "xxxxxxxx",
+              "createdAt": "xxxxxxx",
+              "updatedAt": "xxxxxxx"
+            }
+          ],
+          "creator": "xxxxx",// user id
+          "info": "xxxxx",
+          "createdAt": "xxxx-xx-xx"
+        }
+      },
+      "error": {
+        "code": "40000/50000",//请求错误即courseId或userId错误 / 服务器错误
+        "msg": "wrong course id or user id / server error"
+      }
+    },
+    // 针对老师，学生的后端处理不一样，对老师来说除了要删除course表中的记录，还要删除teach-course表中的记录
+    // 而对于学生只需要删除select-course表中的记录
+    "deleteCourse": {
+      "request": {
+        "url": "course/delete_course",
+        "method": "POST",
+        "params": {},
+        "body": {
+          "courseId": "xxxxxx",
+          "userId": "xxxxxx"
+        }
+      },
+      "response": {
+        "code": 20000,
+        "data": {}
+      },
+      "error": {
+        "code": "40000/50000",//请求错误即courseId或userId错误 / 服务器错误
+        "msg": "wrong course id or user id / server error"
+      }
+    },
     "getStudents": {
       "request": {
         "url": "course/get_students",
@@ -391,6 +479,7 @@
             "name": "xxxxx",
             "info": "xxxxx",
             "email": "xxxxxx",
+            "role": "xxxxx",
             "createdAt": "xxxxxxx",
             "updatedAt": "xxxxxxx"
           },
@@ -399,6 +488,7 @@
             "name": "xxxxx",
             "info": "xxxxx",
             "email": "xxxxxx",
+            "role": "xxxxxx",
             "createdAt": "xxxxxxx",
             "updatedAt": "xxxxxxx"
           },
@@ -407,6 +497,7 @@
             "name": "xxxxx",
             "info": "xxxxx",
             "email": "xxxxxx",
+            "role": "xxxxxx",
             "createdAt": "xxxxxxx",
             "updatedAt": "xxxxxxx"
           }
@@ -424,12 +515,14 @@
         "url": "task/get_tasks",
         "method": "GET",
         "params": {
-          "courseId": "xxxxxxx"
+          "courseId": "xxxxxxx",
+          "userId": "xxxxxx"
         }
       },
       "response": {
         "code": 20000,
         "data": [
+          // 当userId对应的role为老师时
           {
             "taskId": "xxxx",
             "courseId": "xxxxxx",
@@ -463,7 +556,41 @@
             "createdAt": "2020-02-09",
             "updatedAt": "2020-02-09"
           },
-          {...}
+          // 当userId对应的role为学生时
+          {
+            "taskId": "xxxx",
+            "courseId": "xxxxxx",
+            "title": "xxxxx",
+            "content": {
+              "0": {
+                "type": "0",// 0：单选， 1：多选， 2：填空题， 3：判断题， 4：简答题， 5：应用题
+                "question": {
+                  "0":{
+                    "type": "text",
+                    "content": "给出下列三个选项，请问哪一个是最合理的？\nA.你说合理就合理\nB。你说合理也不合理\nC.要具体看才能知道到底合不合理\n"
+                  },
+                  "1":{
+                    "type": "image",
+                    "content": "https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1587735242&di=f4bada181671944549f6db2e6cdd62a4&src=http://cdnimg103.lizhi.fm/audio_cover/2015/07/26/21721885415852551_320x320.jpg"
+                  }
+                },
+                "grade": "5"
+              }
+            },
+            "solution":{
+              "0":{
+                "0":{
+                  "type": "text",
+                  "content": "C"
+                }
+              }
+            },
+            "state": "1",
+            "submissionState": "0", // 对应该用户在task submission中的状态
+            "deadline": "2020-02-28",
+            "createdAt": "2020-02-09",
+            "updatedAt": "2020-02-09"
+          }
         ]
       },
       "error": {
@@ -476,7 +603,6 @@
         "url": "task/get_task",
         "method": "GET",
         "params": {
-          "courseId": "xxxxx",
           "taskId": "xxxxxxx"
         },
         "body": {}
@@ -520,6 +646,70 @@
       "error": {
         "code": "40000/50000",//请求错误即courseId错误或taskId错误 / 服务器错误
         "msg": "wrong course id or task id / server error"
+      }
+    },
+    "getSubmissions": {
+      "request": {
+        "url": "task/get_submissions",
+        "method": "GET",
+        "params": {
+          "taskId": "xxxxxxx"
+        },
+        "body": {}
+      },
+      "response": {
+        "code": 20000,
+        "data": [
+          {
+            "taskId": "xxxxx",
+            "userId": "xxxxx",
+            "name": "xxxxx",
+            "answer": {...},
+            "createdAt": "xxxxxx",
+            "updatedAt": "xxxxx",
+            "state": "x"
+          },
+          {
+            "taskId": "xxxxx",
+            "userId": "xxxxx",
+            "name": "xxxxx",
+            "answer": {...},
+            "createdAt": "xxxxxx",
+            "updatedAt": "xxxxx",
+            "state": "x"
+          }
+        ]
+      },
+      "error": {
+        "code": "40000/50000",//请求错误即taskId错误 / 服务器错误
+        "msg": "wrong task id / server error"
+      }
+    },
+    "getSubmission": {
+      "request": {
+        "url": "task/get_submission",
+        "method": "GET",
+        "params": {
+          "taskId": "xxxxxxx",
+          "userId": "xxxxxx"
+        },
+        "body": {}
+      },
+      "response": {
+        "code": 20000,
+        "data": {
+          "taskId": "xxxxx",
+          "userId": "xxxxx",
+          "name": "xxxxx",
+          "answer": {...},
+          "createdAt": "xxxxxx",
+          "updatedAt": "xxxxx",
+          "state": "x"
+        }
+      },
+      "error": {
+        "code": "40000/50000",//请求错误即taskId错误 / 服务器错误
+        "msg": "wrong task id / server error"
       }
     },
     "createTask": {
@@ -607,7 +797,6 @@
         "params": {},
         "body": {
           "taskId": "xxxxx",
-          "courseId": "xxxxxx",
           "title": "xxxxx",
           "content": {
             "0": {
@@ -684,7 +873,6 @@
         "method": "POST",
         "params": {},
         "body": {
-          "courseId": "xxxxx",
           "taskId": "xxxxxx"
         }
       },
@@ -760,8 +948,7 @@
         "url": "task/get_task_analysis",
         "method": "GET",
         "params": {
-          "taskId": "xxxxxx",
-          "courseId": "xxxxxx"
+          "taskId": "xxxxxx"
         },
         "body": {}
       },
@@ -769,21 +956,48 @@
         "code": 20000,
         "data": {
           "taskId": "xxxxx",
-          "courseId": "xxxxx",
-          "statistic": {
-            "0": {
-              "true": 10,
-              "false": 20
-            },
-            "1": {
-              "true": 23,
-              "false": 7
-            }
+          "totalSubmission": 50,
+          "accuracy": {
+            "1": 20,
+            "2": 30
           },
-          "duplicate": {
-            // TODO
+          "similarity": {
+            "1": {
+              "amount": 3,
+              "detail": {
+                "1": {
+                  "userId": "xxxxx",
+                  "value": "0.95"
+                },
+                "2": {
+                  "userId": "xxxxx",
+                  "value": "0.92"
+                },
+                "3": {
+                  "userId": "xxxxx",
+                  "value": "0.93"
+                }
+              }
+            },
+            "2": {
+              "amount": 2,
+              "detail": {
+                "1": {
+                  "userId": "xxxxx",
+                  "value": "0.95"
+                },
+                "2": {
+                  "userId": "xxxxx",
+                  "value": "0.91"
+                }
+              }
+            }
           }
         }
+      },
+      "error": {
+        "code": "40000/50000", // task id错误或者服务器错误
+        "msg": "task id cannot be null/server error"
       }
     }
   }

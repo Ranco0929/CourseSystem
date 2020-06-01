@@ -6,7 +6,7 @@
           <img :src="item.avatar" class="image" @click="gotoCourseDetail(item)">
           <div style="font-weight: bold;margin: 10px">{{ item.name }}</div>
           <div class="courseInfo">
-            {{ item.teachers.join(' ') }}
+            <span v-for="t in item.teachers" :key="t.userId">{{ t.name + ' ' }}</span>
           </div>
           <div class="courseInfo">
             {{ item.info.slice(0, 20) + '...' }}
@@ -40,8 +40,8 @@
           <el-input v-model="form.info" autocomplete="off" />
         </el-form-item>
         <el-form-item>
-          <el-form v-model="form.teacher">
-            <el-form-item v-for="(teacher, index) in form.teacher" :key="index">
+          <el-form v-model="form.teachers">
+            <el-form-item v-for="(teacher, index) in form.teachers" :key="index">
               <span>{{ teacher.value }}</span>
               <el-button type="text" @click="deleteTeacher(index)">删除</el-button>
             </el-form-item>
@@ -75,13 +75,13 @@
 </template>
 
 <script>
-import { find, remove, create } from '@/api/client'
+import { get, post } from '@/api/client'
 
 const createCourseTemplate = {
   name: '',
   info: '',
   avatar: '',
-  teacher: []
+  teachers: []
 }
 
 export default {
@@ -107,40 +107,33 @@ export default {
   },
   created() {
     // 初始化
-    this.getCourse()
+    get('course/get_courses', { userId: this.$store.getters.userId })
+      .then(res => {
+        this.courses = res.data
+      })
+      .catch(err => {
+        this.$message.error(err.msg)
+        if (err.code === 40002 || err.code === 40003 || err.code === 40005) {
+          this.$store.dispatch('user/resetToken')
+            .catch(err => {
+              this.$message.error(err.msg)
+            })
+            .finally(() => {
+              this.$router.push({ path: 'login', query: {}})
+            })
+        }
+      })
   },
   methods: {
-    async getCourse() {
-      // 获取用户信息
-      const info = await this.$store.dispatch('user/info')
-
-      // 获取用户授课信息
-      const teachCourse = await find('teach-course', { data: { userId: info.userId }})
-
-      // 获取用户教授课程的信息
-      const rec = []
-      for (const tc of teachCourse.data) {
-        const course = await find('course', { data: { courseId: tc.courseId }})
-        const tc2 = await find('teach-course', { data: { courseId: tc.courseId }})
-
-        const users = []
-        for (const t of tc2.data) {
-          const user = await find('user', { data: { userId: t.userId }})
-          users.push(user.data[0].name)
-        }
-        (course.data[0])['teachers'] = users
-        rec.push(course.data[0])
-      }
-      // 对data域中的数据从新进行赋值
-      this.courses = rec
-    },
     deleteCourse(course, index) {
-      remove('course', {
-        data: {
-          courseId: course.courseId
-        }
-      }).then(res => {
-        this.courses.splice(index - 1, 1)
+      post('course/delete_course', {
+        courseId: course.courseId,
+        userId: this.$store.getters.userId
+      }).then(_ => {
+        get('course/get_courses', { userId: this.$store.getters.userId })
+          .then(res => {
+            this.courses = res.data
+          })
         this.$message({
           message: '删除成功',
           type: 'success',
@@ -158,10 +151,8 @@ export default {
       this.$router.push({ path: 'courseDetail', query: { courseId: course.courseId }})
     },
     queryTeachers(queryString, cb) {
-      find('user', {
-        data: {
-          role: 'teacher'
-        }
+      get('user/get_teachers', {
+        data: {}
       }).then(teachers => {
         const result = queryString ? teachers.data.filter(this.createStateFilter(queryString)) : teachers.data
         const ret = []
@@ -177,10 +168,10 @@ export default {
       }
     },
     deleteTeacher(index) {
-      this.form.teacher.splice(index, 1)
+      this.form.teachers.splice(index, 1)
     },
     handleSelect(item) {
-      this.form.teacher.push(item)
+      this.form.teachers.push(item)
       this.showSelectTeacher = false
     },
     handleRemove(file, fileList) {
@@ -192,16 +183,17 @@ export default {
     },
     createCourse() {
       const userId = []
-      for (const teacher of this.form.teacher) {
+      for (const teacher of this.form.teachers) {
         userId.push(teacher.userId)
       }
-      create('course', {
-        data: this.form
-      }).then(res => {
-        this.form = createCourseTemplate
+      const req = Object.assign({}, this.form, { creator: this.$store.getters.userId, teachers: userId })
+      post('course/create_course', req).then(res => {
+        this.form = Object.assign({}, createCourseTemplate)
+        this.$router.go(0)
       }).catch(err => {
-        console.log('create course err')
         this.$message.error('创建课程错误：' + err)
+      }).finally(() => {
+        this.dialogFormVisible = false
       })
     }
   }

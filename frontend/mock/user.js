@@ -51,14 +51,12 @@ export default [
 
       let index = -1
       for(let i = 0; i < user.length; ++i){
-        console.log(user[i].email, token.email)
         if(user[i].email === token.email){
           index = i
           break
         }
       }
 
-      console.log('index', index)
       if (index < 0) {
         return {
           code: 50000,
@@ -134,10 +132,13 @@ export default [
         newUser['createdAt'] = new Date().toUTCString()
         newUser['updatedAt'] = newUser['createdAt']
 
-        user.push(Object.assign({}, newUser, {verfiedCode: '111111'}))
+        user.push(Object.assign({}, newUser, {verifiedCode: '111111'}))
+        const ret = Object.assign({}, newUser)
+        delete ret['password']
+        delete ret['verified']
         return {
           code: 20000,
-          data: newUser
+          data: ret
         }
       }
       return {
@@ -157,7 +158,7 @@ export default [
       let index = -1
       for(let i = 0; i < user.length; ++i){
         if(user[i].userId === userId){
-          index = i;
+          index = i
           break
         }
       }

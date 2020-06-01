@@ -55,6 +55,12 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/register',
+    name: 'register',
+    component: () => import('@/views/register/app'),
+    hidden: true
+  },
+  {
     path: '/404',
     component: () => import('@/views/error-page/404'),
     hidden: true
@@ -107,7 +113,7 @@ export const asyncRoutes = [
         path: '',
         name: 'CourseDetail',
         component: () => import('@/views/courseDetail/index'),
-        meta: { title: 'CourseDetail' }
+        meta: { title: 'CourseDetail', noCache: true }
       }
     ]
   },
@@ -147,19 +153,6 @@ export const asyncRoutes = [
         name: 'TaskCorrection',
         component: () => import('@/views/taskCorrection/index'),
         meta: { title: 'TaskCorrection' }
-      }
-    ]
-  },
-  {
-    path: '/taskAnalysis',
-    component: Layout,
-    hidden: true,
-    children: [
-      {
-        path: '',
-        name: 'TaskAnalysis',
-        component: () => import('@/views/taskAnalysis/index'),
-        meta: { title: 'TaskAnalysis' }
       }
     ]
   },

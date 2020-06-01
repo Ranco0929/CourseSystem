@@ -3,14 +3,76 @@ const user = require('./db').user
 const selectCourse = require('./db').selectCourse
 const teachCourse = require('./db').teachCourse
 const uuid = require('uuid').v4
+const { filterUserInfo } = require('./util')
 
 export default [
+  {
+    url: '/vue-element-admin/course/get_all_courses',
+    type: 'get',
+    response: config => {
+      const { userId } = config.query
+
+      if(!userId){
+        return {
+          code: 40000,
+          msg: 'user id cannot be null'
+        }
+      }
+
+      let index = -1
+      for(let i = 0; i < user.length; ++i){
+        if(user[i].userId === userId){
+          index = i
+        }
+      }
+      if(index === -1){
+        return {
+          code: 40004,
+          msg: 'cannot find user corresponding to the user id'
+        }
+      }
+
+      const ret = []
+      for(let c of course){
+        let duplicate = false
+        for(let sc of selectCourse){
+          if(sc.courseId === c.courseId && sc.userId === userId){
+            duplicate = true
+            break
+          }
+        }
+        if(duplicate) continue
+
+        const userIds = []
+        const teachers = []
+        for(let tc of teachCourse){
+          if(tc.courseId === c.courseId){
+            userIds.push(tc.userId)
+          }
+        }
+        for(let t of userIds){
+          for(let u of user){
+            if(u.userId === t){
+              teachers.push(filterUserInfo(u))
+            }
+          }
+        }
+        const newC = Object.assign({}, c, {teachers})
+        console.log(newC)
+        ret.push(newC)
+      }
+      return {
+        code: 20000,
+        data: ret
+      }
+    }
+  },
+
   {
     url: '/vue-element-admin/course/get_courses',
     type: 'get',
     response: config => {
       const { userId } = config.query
-
       if(!userId){
         return {
           code: 40000,
@@ -37,10 +99,10 @@ export default [
           for(let c of course){
             if(c.courseId === sc.courseId){
               const users = []
-              for(let sc1 of cs){
-                if(sc1.courseId === c.courseId){
+              for(let tc of teachCourse){
+                if(tc.courseId === c.courseId){
                   for(let u of user){
-                    if(sc1.userId === u.userId){
+                    if(tc.userId === u.userId){
                       users.push(u)
                     }
                   }
@@ -55,6 +117,67 @@ export default [
       return {
         code: 20000,
         data: ret
+      }
+    }
+  },
+
+  // get one of courses
+  {
+    url: '/vue-element-admin/course/get_course',
+    type: 'get',
+    response: config => {
+      const { courseId, userId } = config.query
+
+      if(!courseId || !userId){
+        return {
+          code: 40000,
+          msg: 'course id or user id cannot be null'
+        }
+      }
+      let userInfo = null
+      for(let u of user){
+        if(u.userId === userId){
+          userInfo = u
+          break
+        }
+      }
+
+      if(!userInfo){
+        return {
+          code: 40004,
+          msg: 'no user corresponding to user id'
+        }
+      }
+
+      let index = -1
+      for(let i = 0; i < course.length; ++i){
+        if(course[i].courseId === courseId){
+          index = i
+          break
+        }
+      }
+      const cs = userInfo['role'] === 'student' ? selectCourse : teachCourse
+      if(index >= 0){
+        const users = []
+        for(let sc1 of cs){
+          if(sc1.courseId === courseId){
+            for(let u of user){
+              if(sc1.userId === u.userId){
+                users.push(u)
+              }
+            }
+          }
+        }
+        const newC = Object.assign({}, course[index], {teachers: users})
+        return {
+          code: 20000,
+          data: newC
+        }
+      }
+
+      return {
+        code: 40004,
+        msg: 'no course corresponding to the course id'
       }
     }
   },
@@ -96,21 +219,29 @@ export default [
       newC['name'] = name
       newC['info'] = info
       newC['creator'] = creator
-      newC['avatar'] = avatar
+      if(!avatar) newC['avatar'] = 'https://st-gdx.dancf.com/gaodingx/344/design/20190701-173956-77f2.png?x-oss-process=image/resize,w_675/interlace,1,image/format,jpg'
       newC['createdAt'] = new Date()
       course.push(newC)
 
       for(let t of teachers){
-        selectCourse.push({userId: t, courseId: newC['courseId'], createdAt: new Date().toUTCString()})
+        teachCourse.push({userId: t, courseId: newC['courseId'], createdAt: new Date().toUTCString()})
+      }
+      const teacherDetail = []
+      for(let t of teachers){
+        for(let u of user){
+          if(u.userId === t.userId){
+            teacherDetail.push(filterUserInfo(u))
+          }
+        }
       }
       // 如果teachers不包含creator本身，那么在服务端自动加入
       if(teachers.indexOf(creator) === -1){
-        selectCourse.push({userId: creator, courseId: newC['courseId'], createdAt: new Date().toUTCString()})
+        teachCourse.push({userId: creator, courseId: newC['courseId'], createdAt: new Date().toUTCString()})
         teachers.push(creator)
       }
       return {
         code: 20000,
-        data: Object.assign({}, newC, {teachers})
+        data: Object.assign({}, newC, { teachers: teacherDetail })
       }
     }
   },
@@ -126,20 +257,40 @@ export default [
         if(c.courseId === courseId) valid = true
       }
       if(valid){
-        let find = false
         for(let u of user){
-          if(u.userId === userId) find = true
-        }
-        if(find){
-          const newSc = {
-            courseId,
-            userId,
-            createdAt: new Date().toUTCString()
-          }
-          selectCourse.push(newSc)
-          return {
-            code: 20000,
-            data: newSc
+          if(u.userId === userId){
+            selectCourse.push({
+              courseId: courseId,
+              userId: userId,
+              createdAt: new Date().toUTCString()
+            })
+            let cs = null
+            for(let c of course){
+              if(c.courseId === courseId){
+                const teachers = []
+                for(let tc of teachCourse){
+                  if(tc.courseId === courseId){
+                    for(let u of user){
+                      if(u.userId === tc.userId){
+                        teachers.push(filterUserInfo(u))
+                      }
+                    }
+                  }
+                }
+                cs = Object.assign({}, c, { teachers })
+                break
+              }
+            }
+            if(cs === null){
+              return {
+                code: 50000,
+                msg: 'server error!'
+              }
+            }
+            return {
+              code: 20000,
+              data: cs
+            }
           }
         }
       }
@@ -156,13 +307,28 @@ export default [
     url: '/vue-element-admin/course/delete_course',
     type: 'post',
     response: config => {
-      const { courseId, userId, role } = config.body
-      if(!courseId || !userId || !role){
+      const { courseId, userId } = config.body
+      if(!courseId || !userId){
         return {
           code: 40000,
           msg: 'course id and user id and role cannot be null'
         }
       }
+      let index = -1
+      for(let i = 0; i < user.length; ++i){
+        if(user[i].userId === userId){
+          index = i
+          break
+        }
+      }
+      if(index === -1){
+        return {
+          code: 40004,
+          msg: 'cannot find user corresponding to user id'
+        }
+      }
+
+      const role = user[index].role
       // 当角色为teacher时
       if(role === 'teacher'){
         let index = -1
@@ -240,67 +406,6 @@ export default [
       return {
         code: 40000,
         msg: 'role can only be student or teacher'
-      }
-    }
-  },
-
-  // get one of courses
-  {
-    url: '/vue-element-admin/course/get_course',
-    type: 'get',
-    response: config => {
-      const { courseId, userId } = config.query
-
-      if(!courseId || !userId){
-        return {
-          code: 40000,
-          msg: 'course id or user id cannot be null'
-        }
-      }
-      let userInfo = null
-      for(let u of user){
-        if(u.userId === userId){
-          userInfo = u
-          break
-        }
-      }
-
-      if(!userInfo){
-        return {
-          code: 40004,
-          msg: 'no user corresponding to user id'
-        }
-      }
-
-      let index = -1
-      for(let i = 0; i < course.length; ++i){
-        if(course[i].courseId === courseId){
-          index = i
-          break
-        }
-      }
-      const cs = userInfo['role'] === 'student' ? selectCourse : teachCourse
-      if(index >= 0){
-        const users = []
-        for(let sc1 of cs){
-          if(sc1.courseId === courseId){
-            for(let u of user){
-              if(sc1.userId === u.userId){
-                users.push(u)
-              }
-            }
-          }
-        }
-        const newC = Object.assign({}, course[index], {teachers: users})
-        return {
-          code: 20000,
-          data: newC
-        }
-      }
-
-      return {
-        code: 40004,
-        msg: 'no course corresponding to the course id'
       }
     }
   },
