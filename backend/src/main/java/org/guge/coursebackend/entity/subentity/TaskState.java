@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 
 public enum TaskState {
-    PUBLISHED(0),UNPUBLISHED(1);
+    PUBLISHED(1),UNPUBLISHED(0);
     private final int value;
     TaskState(int value) {
         this.value = value;

@@ -1,5 +1,7 @@
 package org.guge.coursebackend.entity;
 
+import com.alibaba.fastjson.JSONObject;
+import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import lombok.Getter;
 import lombok.Setter;
 import org.guge.coursebackend.entity.subentity.Solution;
@@ -7,6 +9,7 @@ import org.guge.coursebackend.entity.subentity.TaskState;
 import org.guge.coursebackend.entity.subentity.TaskContent;
 import org.guge.coursebackend.utils.JpaConverterListJson;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -18,6 +21,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "task", catalog = "COURSESERVER")
+@TypeDef(name = "json", typeClass = JsonStringType.class)
 public class Task {
 
     @Id
@@ -31,17 +35,20 @@ public class Task {
 
     private String title;
 
-    @Convert(converter = JpaConverterListJson.class)
-    @Column(name = "content")
-    private List<TaskContent> taskContents;
+    @Type(type = "json")
+    @Column(name = "content", columnDefinition = "json")
+    private JSONObject content;
 
-    @Convert(converter = JpaConverterListJson.class)
-    @Column(name = "solution")
-    private List<Solution> solutions;
+    @Type(type = "json")
+    @Column(name = "solution", columnDefinition = "json")
+    private JSONObject solution;
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "state")
     private TaskState taskState;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date deadline;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createdAt;

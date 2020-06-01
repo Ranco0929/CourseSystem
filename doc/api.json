@@ -870,11 +870,11 @@
     "deleteTask": {
       "request": {
         "url": "task/delete_task",
-        "method": "POST",
-        "params": {},
-        "body": {
-          "taskId": "xxxxxx"
-        }
+        "method": "DELETE",
+        "params": {
+          "taskId": "xxxx"
+        },
+        "body": {}
       },
       "response": {
         "code": 20000,

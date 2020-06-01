@@ -32,7 +32,7 @@ public class TaskSubmissionService {
                 } else {
                     tempSubmission.setEnable(true);
                     tempSubmission.setUpdatedAt(new Date());
-                    tempSubmission.setAnswers(taskSubmission.getAnswers());
+                    tempSubmission.setAnswer(taskSubmission.getAnswer());
                     tempSubmission.setAnswerState(taskSubmission.getAnswerState());
                     taskSubmissionRepository.save(tempSubmission);
                     return ResultFactory.buildSuccessResult("success");
