@@ -1,5 +1,7 @@
 package org.guge.coursebackend.entity;
 
+import com.alibaba.fastjson.JSONObject;
+import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import lombok.Getter;
 import lombok.Setter;
 import org.guge.coursebackend.entity.subentity.CorrectionContent;
@@ -7,6 +9,7 @@ import org.guge.coursebackend.entity.subentity.CorrectionState;
 import org.guge.coursebackend.entity.subentity.TaskCorrectionKey;
 import org.guge.coursebackend.utils.JpaConverterListJson;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -17,15 +20,16 @@ import java.util.List;
 @Setter
 @Getter
 @Table(name = "task_correction", catalog = "COURSESERVER")
+@TypeDef(name = "json", typeClass = JsonStringType.class)
 public class TaskCorrection {
     @EmbeddedId
     private TaskCorrectionKey taskCorrectionKey;
 
     private boolean enable;
 
-    @Convert(converter = JpaConverterListJson.class)
-    @Column(name = "content")
-    private List<CorrectionContent> correctionContents;
+    @Type(type = "json")
+    @Column(name = "content", columnDefinition = "json")
+    private JSONObject content;
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "state")

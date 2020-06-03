@@ -45,13 +45,15 @@
               align="center"
             >
               <template slot-scope="scope">
-                <el-button type="text" size="small" @click="gotoCorrect(scope.row)">批改</el-button>
+                <el-button :disabled="scope.row.state === '已批改'" type="text" size="small" @click="gotoCorrect(scope.row)">批改</el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-tab-pane>
         <el-tab-pane label="作业分析" name="third">
-          <span>作业分析</span>
+          <div style="width: 100%;height: 400px;">
+            <chart :option="accuracy" />
+          </div>
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -61,15 +63,36 @@
 <script>
 import { get } from '@/api/client'
 import marked from 'marked'
+import chart from '../chart/chart'
 
 export default {
   name: 'Index',
+  components: {
+    chart
+  },
   data() {
     return {
       taskId: '',
       activeName: 'first',
       task: [],
-      submissions: []
+      submissions: [],
+      accuracy: {
+        xAxis: {
+          type: 'category',
+          data: []
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [{
+          data: [],
+          type: 'bar',
+          showBackground: true,
+          backgroundStyle: {
+            color: 'rgba(220, 220, 220, 0.8)'
+          }
+        }]
+      }
     }
   },
   created() {
@@ -82,6 +105,7 @@ export default {
       }).catch(err => {
         this.$message.error('加载失败：' + err)
       })
+      this.setTaskAnalysis()
     }
   },
   methods: {
@@ -119,6 +143,28 @@ export default {
       }
       this.submissions = sbs.data
     },
+    setTaskAnalysis() {
+      get('task/get_task_analysis', {
+        taskId: this.taskId
+      }).then(res => {
+        this.setTaskAccuracy(res.data)
+        this.setTaskSimilarity(res.data)
+      }).catch(err => {
+        this.$message.error(err)
+      })
+    },
+    setTaskAccuracy(data) {
+      if (!data || !data.accuracy) return
+
+      for (const key in data.accuracy) {
+        this.accuracy.xAxis.data.push(key)
+        this.accuracy.series[0].data.push(data.accuracy[key])
+      }
+    },
+    setTaskSimilarity(data) {
+      if (!data || !data.similarity) return
+      // TODO
+    },
     gotoCorrect(rowInfo) {
       this.$router.push({ path: 'taskCorrection', query: { taskId: this.taskId, userId: rowInfo.userId }})
     },
@@ -133,7 +179,7 @@ export default {
       return marked(md)
     },
     handleClick(tab, event) {
-      console.log(tab, event)
+      // if(tab.name === '作业分析') this.getTaskAnalysis()
     }
   }
 }

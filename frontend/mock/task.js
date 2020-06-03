@@ -195,18 +195,18 @@ export default [
     url: '/vue-element-admin/task/update_task',
     type: 'post',
     response: config => {
-      const { taskId, courseId } = config.body
+      const { taskId } = config.body
 
-      if(!taskId || !courseId){
+      if(!taskId){
         return {
           code: 40000,
-          msg: 'task id or course id cannot be null'
+          msg: 'task id cannot be null'
         }
       }
 
       let index = -1
       for(let i = 0; i < task.length; ++i){
-        if(task[i].taskId === taskId && task[i].courseId === courseId){
+        if(task[i].taskId === taskId){
           index = i
           break
         }
@@ -214,12 +214,12 @@ export default [
       if(index === -1){
         return {
           code: 40004,
-          msg: 'no task corresponding to the task id and course id'
+          msg: 'no task corresponding to the task id'
         }
       }
 
+      const newT = Object.assign({}, config.body, {courseId: task[index].courseId})
       task.splice(index, 1)
-      const newT = Object.assign({}, config.body)
       task.push(newT)
       return {
         code: 20000,
@@ -233,18 +233,18 @@ export default [
     url: '/vue-element-admin/task/delete_task',
     type: 'post',
     response: config => {
-      const { taskId, courseId } = config.body
+      const { taskId } = config.body
 
-      if(!taskId || !courseId){
+      if(!taskId){
         return {
           code: 40000,
-          msg: 'task id or course id cannot be null'
+          msg: 'task id cannot be null'
         }
       }
 
       let index = -1
       for(let i = 0; i < task.length; ++i){
-        if(task[i].taskId === taskId && task[i].courseId === courseId){
+        if(task[i].taskId === taskId){
           index = i
           break
         }
@@ -347,9 +347,9 @@ export default [
     url: '/vue-element-admin/task/get_task_analysis',
     type: 'get',
     response: config => {
-      const { taskId, courseId } = config.query
+      const { taskId } = config.query
 
-      if(!taskId || !courseId){
+      if(!taskId){
         return {
           code: 40000,
           msg: 'task id or course id cannot be null'

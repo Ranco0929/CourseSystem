@@ -1,5 +1,6 @@
 package org.guge.coursebackend.entity;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.guge.coursebackend.entity.subentity.FaultsSummary;
@@ -18,9 +19,9 @@ public class TaskAnalysis {
     @Id
     private long taskId;
 
-    @Convert(converter = JpaConverterListJson.class)
-    @Column(name = "fault")
-    private List<FaultsSummary> faultsSummaries;
+    @Type(type = "json")
+    @Column(name = "fault", columnDefinition = "json")
+    private JSONObject faultsSummaries;
 
     //TODO Similarity
     //
