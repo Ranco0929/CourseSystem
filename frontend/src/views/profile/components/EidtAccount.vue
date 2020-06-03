@@ -1,10 +1,7 @@
 <template>
   <el-form>
-    <el-form-item label="邮箱">
-      <el-input ref="email" v-model="user.email" />
-    </el-form-item>
-    <el-form-item label="身份">
-      <el-input ref="role" v-model="user.role" />
+    <el-form-item label="姓名">
+      <el-input ref="name" v-model="user.name" />
     </el-form-item>
     <el-form-item label="简介">
       <el-input ref="info" v-model="user.info" />
@@ -16,21 +13,26 @@
 </template>
 
 <script>
+import { post } from '@/api/client'
+
+const UpdataUserInfo = {
+  name: '',
+  info: ''
+}
+
 export default {
   data() {
     return {
-      user: {
-        email: '',
-        role: '',
-        info: ''
-      }
+      user: UpdataUserInfo
     }
   },
   methods: {
     submit() {
-      this.$store.commit('SET_INFO', this.$refs.info.value)
-      this.$store.commit('SET_EMAIL', this.$refs.email.value)
-      this.$store.commit('SET_ROLE', this.$refs.role.value)
+      post('user/edit_info', {
+        userId: this.$store.getters.userId,
+        name: UpdataUserInfo.name,
+        info: UpdataUserInfo.info
+      })
       this.$message({
         message: 'User information has been updated successfully',
         type: 'success',

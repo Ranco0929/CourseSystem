@@ -127,10 +127,8 @@ export default {
   methods: {
     deleteCourse(course, index) {
       post('course/delete_course', {
-        data: {
-          courseId: course.courseId,
-          userId: this.$store.getters.userId
-        }
+        courseId: course.courseId,
+        userId: this.$store.getters.userId
       }).then(_ => {
         get('course/get_courses', { userId: this.$store.getters.userId })
           .then(res => {

@@ -45,7 +45,7 @@
         </el-form-item>
       </el-tooltip>
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
-      <router-link to="register">没有密码？注册</router-link>
+      <el-button type="primary" style="width:100%;margin-bottom:30px" @click="jumptoRegister">没有账号？点击注册</el-button>
       <div style="position:relative">
         <div class="tips">
           <span>Username : admin</span>
@@ -168,6 +168,9 @@ export default {
           return false
         }
       })
+    },
+    jumptoRegister() {
+      this.$router.push({ path: 'register', query: this.redirect })
     },
     getOtherQuery(query) {
       return Object.keys(query).reduce((acc, cur) => {

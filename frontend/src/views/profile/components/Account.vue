@@ -6,10 +6,10 @@
           <el-avatar :size="150" :src="avatar" />
         </div>
         <div>
-          <el-card><span> 邮箱：{{ email }}</span></el-card>
-          <el-card><span> 姓名：{{ name }}</span></el-card>
-          <el-card><span> 身份：{{ role }}</span></el-card>
-          <el-card><span> 简介：{{ info }}</span></el-card>
+          <el-card><span> 邮箱：{{ user.email }}</span></el-card>
+          <el-card><span> 姓名：{{ user.name }}</span></el-card>
+          <el-card><span> 身份：{{ user.role }}</span></el-card>
+          <el-card><span> 简介：{{ user.info }}</span></el-card>
         </div>
       </el-col>
     </el-row>
@@ -36,18 +36,38 @@
 
 <script>
 import { mapState } from 'vuex'
+import { get } from '@/api/client'
 
 export default {
 
   data() {
     return {
+      user: [],
+      avatar: 'http://image.biaobaiju.com/uploads/20181025/19/1540467434-IhiJNbyXak.jpg',
       dialogVisible: false,
-      imageUrl: '',
-      avatar: 'http://image.biaobaiju.com/uploads/20181025/19/1540467434-IhiJNbyXak.jpg'
+      imageUrl: ''
     }
   },
   computed: {
     ...mapState(['role', 'email', 'name', 'avatar', 'info'])
+  },
+  created() {
+    get('user/get_info', { userId: this.$store.getters.token })
+      .then(res => {
+        this.user = res.data
+      })
+      .catch(err => {
+        this.$message.error(err.msg)
+        if (err.code === 40002 || err.code === 40003 || err.code === 40005) {
+          this.$store.dispatch('user/resetToken')
+            .catch(err => {
+              this.$message.error(err.msg)
+            })
+            .finally(() => {
+              this.$router.push({ path: 'login', query: {}})
+            })
+        }
+      })
   },
   methods: {
     handleClose(done) {
