@@ -125,7 +125,11 @@ public class UserService {
     public void setVerifyCode(long userId, String code) throws ServerErrorException {
         var it = userRepository.findById(userId);
         if (!it.isEmpty()) {
-            it.get().setVerifiedCode(code);
+            var user = it.get();
+            user.setVerifiedCode(code);
+
+            userRepository.save(user);
+            return;
         }
 
         throw new ServerErrorException();

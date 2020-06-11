@@ -13,4 +13,7 @@ public interface SelectCourseRepository extends CrudRepository<SelectCourse, Sel
 
     @Query(value = "SELECT * FROM select_course WHERE user_id = ?1", nativeQuery=true)
     List<SelectCourse> findAllByUserId(Long userId);
+
+    @Query(value = "SELECT * FROM select_course WHERE course_id = ?1", nativeQuery=true)
+    List<SelectCourse> findAllByCourseId(Long courseId);
 }
