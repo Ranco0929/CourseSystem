@@ -2,10 +2,13 @@ package org.guge.coursebackend.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.guge.coursebackend.utils.JpaConverterListJson;
+import org.hibernate.annotations.Type;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,7 +20,18 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long courseId;
 
+    private String name;
+
+    private String info;
+
     private boolean enable;
+
+    private String avator;
+
+    @Type(type = "json")
+    @Convert(converter = JpaConverterListJson.class)
+    @Column(columnDefinition = "json")
+    private List<Long> teachers;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createdAt;

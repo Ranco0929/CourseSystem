@@ -56,7 +56,7 @@ public class UserService {
                 user.setEnable(true);
                 userRepository.save(user);
 
-                return ResultFactory.buildSuccessResult(userRepository.findByEmail(user.getEmail()));
+                return ResultFactory.buildSuccessResult(userRepository.findByEmail(user.getEmail()).orElseThrow());
             } else {
                 return ResultFactory.buildFailResult("Specific Id has created: " + user.getUserId());
             }

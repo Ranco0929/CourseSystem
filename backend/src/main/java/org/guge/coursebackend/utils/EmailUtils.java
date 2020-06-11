@@ -5,6 +5,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.guge.coursebackend.entity.User;
 import org.guge.coursebackend.service.UserService;
 import org.guge.coursebackend.utils.result.Result;
+import org.guge.coursebackend.utils.result.ResultCode;
 import org.springframework.aop.AfterReturningAdvice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -24,6 +25,10 @@ public class EmailUtils {
 
     @AfterReturning(returning = "result", pointcut = "execution(* org.guge.coursebackend.controller.UserController.register(..))")
     void mailSendTest(Result result) throws Exception {
+
+        if (result.getCode() != ResultCode.SUCCESS.code) {
+            return;
+        }
 
         User user = (User) result.getData();
 
