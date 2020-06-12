@@ -285,9 +285,7 @@
       "request": {
         "url": "course/get_all_courses",
         "method": "GET",
-        "params": {
-          "userId": "xxxxxx"
-        }
+        "params": {}
       },
       "response": {
         "code": 20000,
