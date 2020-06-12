@@ -1,4 +1,4 @@
-package org.guge.coursebackend.utils;
+package org.guge.coursebackend.aop;
 
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -16,7 +16,7 @@ import java.util.Random;
 
 @Aspect
 @Component
-public class EmailUtils {
+public class EmailSender {
     @Autowired
     JavaMailSenderImpl mailSender;
 
