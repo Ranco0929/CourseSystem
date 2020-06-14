@@ -1,5 +1,5 @@
 <template>
-  <el-row type="flex" justify="center">
+  <el-row type="flex" justify="center" style="margin-top: 50px">
     <el-form ref="formData" :model="formData" :rules="rules" label-width="80px" @keyup.enter.native="register()">
       <el-form-item prop="email" label="邮箱">
         <el-input v-model="formData.email" placeholder="请输入邮箱" prefix-icon="icon-login_email" clearable />
@@ -32,7 +32,7 @@
         <el-input v-model="verifiedCode" placeholder="请输入邮箱校验码" name="code" />
         <span slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="dialogVisible = false">确定</el-button>
+          <el-button type="primary" @click="verify()">确定</el-button>
         </span>
       </el-dialog>
     </el-form>
@@ -74,30 +74,36 @@ export default {
         role: 'student',
         label: '学生'
       }],
-      dialogVisible: false
+      dialogVisible: false,
+      verifiedCode: '',
+      registerInfo: ''
     }
   },
   methods: {
     register(formName, dialogVisible) {
-      dialogVisible = true
       console.log(dialogVisible)
       this.$refs[formName].validate(valid => {
         if (valid) {
-          post('user/register', {
-            name: formName.name,
-            email: formName.email,
-            info: formName.info,
-            role: formName.role,
-            password: formName.password
-          })
-          this.$message({
-            type: 'success',
-            message: '注册成功'
-          })
+          post('user/register', this.formData)
+            .then(res => {
+              this.registerInfo = res.data
+              this.dialogVisible = true
+            })
         } else {
-          console.log('error submit!!')
+          this.$message.error('error submit!')
           return false
         }
+      })
+    },
+    verify() {
+      post('user/verify', {
+        verifiedCode: this.verifiedCode,
+        userId: this.registerInfo.userId
+      }).then(() => {
+        this.dialogVisible = false
+        this.$message.success('注册成功！')
+      }).catch(err => {
+        this.$message.error(err + ':验证码错误,请重新输入')
       })
     },
     resetForm(formName) {

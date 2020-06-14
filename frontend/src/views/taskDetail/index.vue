@@ -1,7 +1,7 @@
 <template>
   <div class="main-area">
     <el-card>
-      <el-tabs v-model="activeName" @tab-click="handleClick">
+      <el-tabs v-model="activeName">
         <el-tab-pane label="作业详情" name="first">
           <center>
             <h3>{{ task.title }}</h3>
@@ -95,6 +95,15 @@ export default {
       }
     }
   },
+  watch: {
+    activeName(newVal, oldVal) {
+      if (newVal === 'third') {
+        this.setTaskAccuracy()
+        this.setTaskAnalysis()
+        this.setTaskSimilarity()
+      }
+    }
+  },
   created() {
     if (this.$router.currentRoute.query.taskId !== undefined) {
       this.taskId = this.$router.currentRoute.query.taskId
@@ -177,9 +186,6 @@ export default {
     },
     markdown2HTML(md) {
       return marked(md)
-    },
-    handleClick(tab, event) {
-      // if(tab.name === '作业分析') this.getTaskAnalysis()
     }
   }
 }
