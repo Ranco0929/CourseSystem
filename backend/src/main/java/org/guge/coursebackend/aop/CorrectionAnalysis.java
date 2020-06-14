@@ -21,7 +21,7 @@ public class CorrectionAnalysis {
     @Autowired
     private TaskAnalysisRepository taskAnalysisRepository;
 
-    @AfterReturning(returning = "result", pointcut = "execution(* org.guge.coursebackend.service.TaskService.correctTask(correction, email))")
+    @AfterReturning(returning = "result", pointcut = "execution(* org.guge.coursebackend.service.TaskService.correctTask(..)) && args(correction, email)")
     public void autoSummary(Result result, JSONObject correction, String email) throws Exception {
         if (result.getCode() != ResultCode.SUCCESS.code) {
             return;
