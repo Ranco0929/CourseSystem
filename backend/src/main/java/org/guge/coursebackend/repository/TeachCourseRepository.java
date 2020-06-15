@@ -13,4 +13,5 @@ public interface TeachCourseRepository extends CrudRepository<TeachCourse, Teach
 
     @Query(value = "SELECT * FROM teach_course WHERE course_id = ?1", nativeQuery=true)
     List<TeachCourse> findAllByCourseId(Long courseId);
+
 }

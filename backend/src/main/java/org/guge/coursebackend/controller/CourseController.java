@@ -24,9 +24,8 @@ public class CourseController{
 
     @LoginRequire
     @GetMapping(path = "/get_courses", produces = "application/json;charset=utf-8")
-    public Result getCourses(@RequestHeader("Authorization") String token){
-        var claims=TokenUtils.parseToken(token);
-        return courseService.getCourses(claims.getId());
+    public Result getCourses(@RequestParam("userId") Long userId){
+        return courseService.getCourses(userId);
     }
 
     @LoginRequire
@@ -41,9 +40,8 @@ public class CourseController{
         return courseService.create(name,info,avatar,creator,teachers);
     }
 
-    @LoginRequire
     @PostMapping(path = "/add_course",produces = "application/json;charset=utf-8")
-    public Result addcourse(@Valid @RequestBody String course){
+    public Result addCourse(@RequestBody String course){
         JSONObject obj = JSON.parseObject(course);
         var courseId = obj.getLong("courseId");
         var userId = obj.getLong("userId");
@@ -51,35 +49,26 @@ public class CourseController{
 
     }
 
-    @LoginRequire
     @PostMapping(path = "/delete_Course",produces = "application/json;charset=utf-8")
     public Result deleteCourse(@RequestBody String course){
         JSONObject obj = JSON.parseObject(course);
         var courseId = obj.getLong("courseId");
         var userId = obj.getLong("userId");
-        var role =obj.getString("role");
         if(obj.containsKey("courseId")){
-            return courseService.delete(courseId,userId,role);
+            return courseService.delete(courseId,userId);
         }else{
             return ResultFactory.buildFailResult("Invalid Request Body:" + obj.toJSONString());
         }
     }
 
-    @LoginRequire
     @GetMapping(path = "/get_course",produces = "application/json;charset=utf-8")
-    public Result getcourse(@RequestHeader("Authorization") String token){
-          JSONObject obj = JSON.parseObject(token);
-          var courseId = obj.getLong("courseId");
-          return courseService.getCourse(courseId);
-        }
-
-    @LoginRequire
-    @GetMapping(path = "/get_students",produces = "application/json;charset=utf-8")
-    public Result getStudents(@RequestParam("courseId") String token){
-          JSONObject obj = JSON.parseObject(token);
-          var courseId = obj.getLong("courseId");
-        return courseService.getStudents(courseId);
+    public Result getCourse(@RequestParam("courseId") Long courseId, @RequestParam("userId") Long userId){
+          return courseService.getCourse(courseId,userId);
     }
 
+    @GetMapping(path = "/get_students",produces = "application/json;charset=utf-8")
+    public Result getStudents(@RequestParam("courseId") Long courseId){
+        return courseService.getStudents(courseId);
 
+    }
 }

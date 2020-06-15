@@ -194,11 +194,9 @@ public class UserService {
                         if (!result.containsKey(teacherId)) {
                             JSONObject keyValue = new JSONObject();
                             var new_teacher = userRepository.findById(teacherId).orElseThrow();
-
                             keyValue.put("userId", new_teacher.getUserId());
                             keyValue.put("name", new_teacher.getName());
                             keyValue.put("email", new_teacher.getEmail());
-
                             result.put(teacherId, keyValue);
                         }
                     }

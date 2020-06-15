@@ -1,5 +1,6 @@
 package org.guge.coursebackend.repository;
 
+import org.guge.coursebackend.entity.Course;
 import org.guge.coursebackend.entity.SelectCourse;
 import org.guge.coursebackend.entity.subentity.SelectCourseKey;
 import org.springframework.data.jpa.repository.Query;
@@ -7,6 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SelectCourseRepository extends CrudRepository<SelectCourse, SelectCourseKey> {
@@ -16,4 +18,5 @@ public interface SelectCourseRepository extends CrudRepository<SelectCourse, Sel
 
     @Query(value = "SELECT * FROM select_course WHERE course_id = ?1", nativeQuery=true)
     List<SelectCourse> findAllByCourseId(Long courseId);
+
 }
