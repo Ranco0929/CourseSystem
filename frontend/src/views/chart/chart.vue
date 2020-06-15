@@ -44,6 +44,7 @@ export default {
           } else {
             this.chart.setOption(oldOption)
           }
+          this.chart.resize()
         } else {
           this.init()
         }
@@ -63,10 +64,14 @@ export default {
       try {
         this.chart = echarts.init(document.getElementById(this.uuid))
         this.chart.setOption(this.option)
-        window.addEventListener('resize', this.chart.resize)
+        window.addEventListener('resize', this.resize)
       } catch (e) {
         console.log(e)
       }
+    },
+    resize() {
+      this.chart.clear()
+      this.chart.resize()
     }
   }
 }
