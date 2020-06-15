@@ -85,7 +85,7 @@ public class CourseService {
                         keyValue.put("creator", new_course.getCreator());
                         keyValue.put("info", new_course.getInfo());
                         keyValue.put("createdAt", new_course.getCreatedAt());
-                        
+
                         result.put(courseId, keyValue);
                     }
                 }
