@@ -38,43 +38,55 @@ public class CourseService {
     public Result getCourses(String email){
         try{
             var it = userRepository.findByEmail(email);
-            var userid=it.get().getUserId();
+
             if(it.isEmpty()){
                 return ResultFactory.NotFoundResult("user id not found");
             }else{
                 var id = it.get().getUserId();
                 var courseList = selectCourseRepository.findAllByCourseId(id);
+
                 Map<Long , JSONObject> result = new HashMap<>();
+
                 for(var selectCourse : courseList){
+
                     var courseId = selectCourse.getSelectCourseKey().getCourseId();
+
                     if(!result.containsKey(courseId)){
+
                         JSONObject keyValue = new JSONObject();
                         var new_course = courseRepository.findById(courseId).orElseThrow();
+
                         keyValue.put("courseId", new_course.getCourseId());
                         keyValue.put("name", new_course.getName());
                         keyValue.put("avatar", new_course.getAvatar());
-                        Map<Long , JSONObject> teacherresult = new HashMap<>();
-                        var teacherlist = teachCourseRepository.findAllByCourseId(selectCourse.getSelectCourseKey().getCourseId());
+
+                        Map<Long , JSONObject> teacherResult = new HashMap<>();
+
+                        var teacherlist = new_course.getTeachers();
+
+                        var teacher_array = new JSONArray();
+
                         for (var teacher : teacherlist) {
-                            var teacherId = teacher.getTeachCourseKey().getUserId();
-                            if (!result.containsKey(teacherId)) {
-                                JSONObject keyValuesecond = new JSONObject();
-                                var new_teacher = userRepository.findById(teacherId).orElseThrow();
-                                keyValuesecond.put("userId", new_teacher.getUserId());
-                                keyValuesecond.put("name", new_teacher.getName());
-                                keyValuesecond.put("info", new_teacher.getInfo());
-                                keyValuesecond.put("email", new_teacher.getEmail());
-                                keyValuesecond.put("role", new_teacher.getRole());
-                                keyValuesecond.put("createdAt", new_teacher.getCreatedAt());
-                                keyValuesecond.put("updatedAt", new_teacher.getUpdatedAt());
-                                teacherresult.put(teacherId,keyValuesecond);
-                            }
+                                JSONObject keyValueSecond = new JSONObject();
+
+                                var new_teacher = userRepository.findById(teacher).orElseThrow();
+
+                                keyValueSecond.put("userId", new_teacher.getUserId());
+                                keyValueSecond.put("name", new_teacher.getName());
+                                keyValueSecond.put("info", new_teacher.getInfo());
+                                keyValueSecond.put("email", new_teacher.getEmail());
+                                keyValueSecond.put("createdAt", new_teacher.getCreatedAt());
+                                keyValueSecond.put("updatedAt", new_teacher.getUpdatedAt());
+
+                                teacher_array.add(keyValueSecond);
+
                         }
-                        keyValue.put("teachers",teacherresult);
+                        keyValue.put("teachers",teacher_array);
                         keyValue.put("creator", new_course.getCreator());
                         keyValue.put("info", new_course.getInfo());
                         keyValue.put("createdAt", new_course.getCreatedAt());
-                        result.put(userid, keyValue);
+                        
+                        result.put(courseId, keyValue);
                     }
                 }
                 JSONArray array = new JSONArray();
