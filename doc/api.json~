@@ -95,10 +95,11 @@
       "request": {
         "url": "user/verify",
         "method": "POST",
-        "params": {
-	    "token":"xxxxxxxxxxxxx"
-	},
-        "body": {}
+        "params": {},
+        "body": {
+          "userId": "xxxxxx",
+          "verifiedCode": "xxxxxx"
+        }
       },
       "response": {
         "code": 20000,

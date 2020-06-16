@@ -56,7 +56,7 @@ public class UserController {
     @PostMapping(path = "/verify", produces = "application/json;charset=utf-8")
     public Result verify(@RequestParam String token) {
         JSONObject detail = JSON.parseObject(TokenUtils.parseToken(token).getId());
-        return userService.verify(detail.getLong("email"), detail.getString("code"));
+        return userService.verify(detail.getString("email"), detail.getString("code"));
     }
 
     @Deprecated
