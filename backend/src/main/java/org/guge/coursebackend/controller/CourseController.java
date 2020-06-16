@@ -6,7 +6,9 @@ import com.alibaba.fastjson.JSONObject;
 import org.guge.coursebackend.service.CourseService;
 import org.guge.coursebackend.utils.TokenUtils;
 import org.guge.coursebackend.utils.annotation.LoginRequire;
+import org.guge.coursebackend.utils.exceptions.CourseException;
 import org.guge.coursebackend.utils.result.Result;
+import org.guge.coursebackend.utils.result.ResultCode;
 import org.guge.coursebackend.utils.result.ResultFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -80,6 +82,9 @@ public class CourseController{
           var courseId = obj.getLong("courseId");
         return courseService.getStudents(courseId);
     }
-
-
+    
+    @ExceptionHandler(CourseException.class)
+    public @ResponseBody Result dealHandlerExceptionResolver() {
+        return ResultFactory.buildResult(ResultCode.AUTHORIZATION, "Please login", "");
+    }
 }
