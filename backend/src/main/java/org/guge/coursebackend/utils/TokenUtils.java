@@ -30,6 +30,16 @@ public class TokenUtils {
         return createToken(email, issuer, subject, ttlMillis);
     }
 
+    public static String createVerifyToken(String emailWithCode) {
+        String issuer = "guge-course.com";
+
+        String subject = "hitrel@outlook.com";
+
+        long ttlMillis = 3600000;
+
+        return createToken(emailWithCode, issuer, subject, ttlMillis);
+    }
+
     public static String createToken(String email, String issuer, String subject, long ttlMillis) {
 
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;

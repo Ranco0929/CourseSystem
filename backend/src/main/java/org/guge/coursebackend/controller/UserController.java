@@ -53,11 +53,10 @@ public class UserController {
         return userService.create(user);
     }
 
-    @LoginRequire
     @PostMapping(path = "/verify", produces = "application/json;charset=utf-8")
-    public Result verify(@RequestBody String keyValue) {
-        JSONObject detail = JSON.parseObject(keyValue);
-        return userService.verify(detail.getLong("userId"), detail.getString("verifiedCode"));
+    public Result verify(@RequestParam String token) {
+        JSONObject detail = JSON.parseObject(TokenUtils.parseToken(token).getId());
+        return userService.verify(detail.getLong("email"), detail.getString("code"));
     }
 
     @Deprecated

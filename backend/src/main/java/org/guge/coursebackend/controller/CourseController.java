@@ -82,7 +82,7 @@ public class CourseController{
           var courseId = obj.getLong("courseId");
         return courseService.getStudents(courseId);
     }
-    
+
     @ExceptionHandler(CourseException.class)
     public @ResponseBody Result dealHandlerExceptionResolver() {
         return ResultFactory.buildResult(ResultCode.AUTHORIZATION, "Please login", "");

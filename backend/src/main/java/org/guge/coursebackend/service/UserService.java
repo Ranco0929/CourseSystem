@@ -135,9 +135,9 @@ public class UserService {
         throw new ServerErrorException();
     }
 
-    public Result verify(long userId, String code) {
+    public Result verify(String email, String code) {
         try {
-            var it = userRepository.findById(userId);
+            var it = userRepository.findByEmail(email);
             if (it.isEmpty()) {
                 return ResultFactory.buildResult(ResultCode.NOTFOUND, "User Not Found", "");
             } else {
