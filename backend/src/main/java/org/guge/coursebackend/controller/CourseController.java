@@ -77,9 +77,8 @@ public class CourseController{
 
     @LoginRequire
     @GetMapping(path = "/get_students",produces = "application/json;charset=utf-8")
-    public Result getStudents(@RequestParam("courseId") String token){
-          JSONObject obj = JSON.parseObject(token);
-          var courseId = obj.getLong("courseId");
+    public Result getStudents(@RequestParam("courseId") long courseId){
+
         return courseService.getStudents(courseId);
     }
 

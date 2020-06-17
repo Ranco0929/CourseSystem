@@ -2,6 +2,7 @@ package org.guge.coursebackend.entity;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.guge.coursebackend.entity.subentity.FaultsSummary;
 import org.guge.coursebackend.utils.JpaConverterListJson;
@@ -14,6 +15,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @Table(name = "task_analysis", catalog = "COURSESERVER")
 public class TaskAnalysis {
     @Id
@@ -23,7 +25,7 @@ public class TaskAnalysis {
     @Column(name = "fault", columnDefinition = "json")
     private JSONObject faultsSummaries;
 
-    //TODO Similarity
-    //
-    //
+    @Type(type = "json")
+    @Column(name = "similarity", columnDefinition = "json")
+    private JSONObject similarity;
 }
